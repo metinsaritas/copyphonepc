@@ -1,0 +1,33 @@
+{
+   "background": {
+      "page": "background.html"
+   },
+   "browser_action": {
+      "default_icon": {
+         "38": "imgs/38.png"
+      },
+      //"default_popup": "popup.html",
+      "default_title": "Kopyalama islemi"
+   },
+   /*"content_scripts": [ {
+      "all_frames": false,
+      "js": [ "js/page-action.js" ],
+      "matches": [ "\u003Call_urls>" ],
+      "run_at": "document_end"
+   } ],*/
+   "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+   "description": "Kopyalar",
+   /*"icons": {
+      "128": "imgs/128.png",
+      "16": "imgs/16.png",
+      "48": "imgs/48.png"
+   },*/
+   //"key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApndmBHJD4Bzkv7oZhPm/Mz0Y0nAitayBfVz16YySx0pD2tqT17uk8De07LatjFgVakcIvTTWRn7OHsniz+5y2saSswA2063zVf+RiTzo7UDQfe6J+pkpwhfFMSdRcZszLgDgJU1SWp/qqMDzp3I4JtzF1TGqa8VORjQ6VbqK5GpeE+g8CtihsXjjHUalIigJuB9VcN02aE8+Jd3Gzqpzovo7tsDklt4zxynedSuztgESgDYbxoxxBSPJHtYcnfXGO7gGBo/nAm4ejO56LaGXzk4tc2L3qbVNxbIwaP5j4W8ll8949jG2iG9anvaR/zSbC8aascdDMGF+ZNVn8xXmjwIDAQAB",
+   "manifest_version": 2,
+   "name": "Uzaktan Kopyalama",
+   "offline_enabled": true,
+   //"options_page": "options.html",
+   "permissions": [ "clipboardWrite", "clipboardRead", "storage", "tabs", "contextMenus" ],
+   //"update_url": "https://clients2.google.com/service/update2/crx",
+   "version": "2.4.7"
+}
