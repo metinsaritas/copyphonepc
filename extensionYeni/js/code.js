@@ -60,7 +60,7 @@ app.controller("myCtrl", function($scope, $interval){
 
 
 socket.on("phoneCopied", function(data){
-	//console.log(data);
+	//console.log(data);//
 	if (typeof data != "object") return;
 	if (!("copiedText" in data)) return;
 	var copiedText = data.copiedText;
