@@ -1,10 +1,18 @@
 package com.metinsaritas.copyphone_pc;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.github.nkzawa.emitter.Emitter;
@@ -15,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ActivityMain extends AppCompatActivity implements ClipboardManager.OnPrimaryClipChangedListener {
 
@@ -22,11 +32,16 @@ public class ActivityMain extends AppCompatActivity implements ClipboardManager.
     private Socket socket;
     String lastCopied = "";
     boolean otherCopying = false;
+    private MyNotification myNotification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        myNotification = new MyNotification(ActivityMain.this);
+        RemoteViews remoteViews = myNotification.getRemoteViews();
 
         clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         clipboardManager.addPrimaryClipChangedListener(this);
@@ -41,6 +56,8 @@ public class ActivityMain extends AppCompatActivity implements ClipboardManager.
                         @Override
                         public void run() {
                             Toast.makeText(ActivityMain.this, "Connected", Toast.LENGTH_SHORT).show();
+                            myNotification.getRemoteViews().setImageViewResource(R.id.ivNotificationStatus, R.drawable.status_green);
+                            myNotification.showNotify();
                         }
                     });
 
@@ -54,6 +71,8 @@ public class ActivityMain extends AppCompatActivity implements ClipboardManager.
                         @Override
                         public void run() {
                             Toast.makeText(ActivityMain.this, "Error", Toast.LENGTH_SHORT).show();
+                            myNotification.getRemoteViews().setImageViewResource(R.id.ivNotificationStatus, R.drawable.status_red);
+                            myNotification.showNotify();
                         }
                     });
                 }
@@ -66,6 +85,8 @@ public class ActivityMain extends AppCompatActivity implements ClipboardManager.
                         @Override
                         public void run() {
                             Toast.makeText(ActivityMain.this, "Disconnected", Toast.LENGTH_SHORT).show();
+                            myNotification.getRemoteViews().setImageViewResource(R.id.ivNotificationStatus, R.drawable.status_red);
+                            myNotification.showNotify();
                         }
                     });
                 }
@@ -75,6 +96,10 @@ public class ActivityMain extends AppCompatActivity implements ClipboardManager.
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+
+        remoteViews.setTextViewText(R.id.tvNotificationRoomId, "Not connected");
+
+        myNotification.showNotify();
 
     }
 
@@ -134,4 +159,9 @@ public class ActivityMain extends AppCompatActivity implements ClipboardManager.
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        myNotification.cancel();
+    }
 }

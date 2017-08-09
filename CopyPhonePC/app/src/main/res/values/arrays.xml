@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="denemeyazisi">
+        <item>Secenek1</item>
+        <item>Secenek2</item>
+        <item>Secenek3</item>
+        <item>Secenek4</item>
+
+    </string>
+</resources>

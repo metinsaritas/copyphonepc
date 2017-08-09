@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="5dp">
+
+
+
+
+    <ImageView
+        android:id="@+id/ivNotificationStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/status_red"
+        android:layout_marginRight="6dp"/>
+
+    <TextView
+        android:id="@+id/tvNotificationRoomLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/ivNotificationStatus"
+        android:fontFamily="@font/archivo_narrow"
+        android:minWidth="70dp"
+        android:padding="3dp"
+        android:text="Room"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvNotificationMember"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/archivo_narrow"
+        android:text="Member"
+        android:textStyle="bold"
+        android:padding="3dp"
+        android:minWidth="70dp"
+        android:layout_alignBottom="@+id/ivNotificationStatus"
+        android:layout_alignStart="@+id/tvNotificationRoomLabel" />
+
+    <TextView
+        android:id="@+id/tvNotificationRoomId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/tvNotificationRoomLabel"
+        android:minWidth="100dp"
+        android:padding="3dp"
+        android:text="FBKDBHRU" />
+
+    <TextView
+        android:id="@+id/tvNotificationMemberCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="3dp"
+        android:text="0"
+        android:minWidth="100dp"
+        android:layout_below="@+id/tvNotificationRoomId"
+        android:layout_marginTop="1dp"
+        android:layout_toEndOf="@+id/tvNotificationRoomLabel" />
+
+    <Button
+        android:id="@+id/tvNotificationStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:minWidth="60dp"
+        android:text="Off"
+        android:textAllCaps="false"
+        android:layout_alignBottom="@+id/tvNotificationMemberCount"
+        android:layout_alignParentEnd="true" />
+
+</RelativeLayout>
