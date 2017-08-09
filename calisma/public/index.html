@@ -1,0 +1,29 @@
+﻿<html>
+<head>
+<title>fff</title>
+</head>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="socket.io/socket.io.js"></script>
+<script>
+	var socket = io();
+	socket.on("uyar", function(data) {
+		console.log(data);
+	});
+	
+	socket.on("phoneCopied", function(data) {
+		console.log("%cTelden: ","background-color:yellow");
+		console.log(data);
+	})
+	
+	$(function(){
+		$("#gonder").on("click", function(){
+		var copiedText = $("#mesaj").val();
+			socket.emit("otherCopied", {"copiedText":copiedText,"from":"chrome"});
+		});
+	});
+</script>
+<input type="text" id="mesaj"/>
+<input type="button" id="gonder" value="Gönder"/>
+</body>
+</html>
