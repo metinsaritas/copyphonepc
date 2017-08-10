@@ -16,18 +16,19 @@ app.get('/', function(req, res){
 io.on('connection', function(socket){
   console.log('a user connected');
     
-  socket.on("phoneCopied", function(data){
+  socket.on("dataCopied", function(data){
 	  if (typeof data != "object") return;
-	  socket.broadcast.emit("phoneCopied", data);
+	  socket.broadcast.emit("otherCopied", data);
 	  console.log(data);
   });
   
+  /*
   socket.on("otherCopied", function(data){
 	  if (typeof data != "object") return;
-	  socket.broadcast.emit("otherCopied", data); 
+	  socket.broadcast.emit("phoneCopied", data); 
 	  console.log(data);
   });
-  
+  */
 });
 
 http.listen(port, function(){

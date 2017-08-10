@@ -34,15 +34,15 @@ function pasteLoop() {
 	changeVar("copiedText", paste());
 }
 
-var phoneCopying = false;
+var otherCopying = false;
 
 var app = angular.module("myApp", []);
 var interval;
 app.controller("myCtrl", function($scope, $interval){
 	$scope.copiedText = paste();
 	$scope.$watch("copiedText", function(n,o) {
-		if (phoneCopying) {
-			phoneCopying = false;
+		if (otherCopying) {
+			otherCopying = false;
 			return;
 		}
 		
@@ -50,7 +50,7 @@ app.controller("myCtrl", function($scope, $interval){
 		if (socket.connected) {
 			var copiedText = n;
 			if (copiedText.length > 0) {
-				socket.emit("otherCopied", {"from":"chrome","copiedText":copiedText});
+				socket.emit("dataCopied", {"from":"chrome","copiedText":copiedText});
 			}
 		}
 	});
@@ -59,12 +59,12 @@ app.controller("myCtrl", function($scope, $interval){
 });
 
 
-socket.on("phoneCopied", function(data){
+socket.on("otherCopied", function(data){
 	//console.log(data);//bbbaasad
 	if (typeof data != "object") return;
 	if (!("copiedText" in data)) return;
 	var copiedText = data.copiedText;
-	phoneCopying = true;
+	otherCopying = true;
 	copy(copiedText);
 	changeVar("copiedText", copiedText);
 });

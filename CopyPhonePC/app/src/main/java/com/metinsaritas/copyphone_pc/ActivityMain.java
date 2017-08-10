@@ -155,7 +155,7 @@ public class ActivityMain extends AppCompatActivity implements ClipboardManager.
         lastCopied = copiedText;
 
         // ben kopyaladıysm emit et
-        socket.emit("phoneCopied", json);
+        socket.emit("dataCopied", json);
 
     }
 
