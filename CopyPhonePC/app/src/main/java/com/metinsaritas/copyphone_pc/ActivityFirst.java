@@ -2,6 +2,9 @@ package com.metinsaritas.copyphone_pc;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.SharedPreferences;
+import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -22,9 +25,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.CompoundButton;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
@@ -35,7 +40,7 @@ import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 
-public class ActivityFirst extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ClipboardManager.OnPrimaryClipChangedListener {
+public class ActivityFirst extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ClipboardManager.OnPrimaryClipChangedListener, CompoundButton.OnCheckedChangeListener {
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private NavigationView navigationView;
@@ -45,6 +50,10 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
     String lastCopied = "";
     boolean otherCopying = false;
     private MyNotification myNotification;
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
+
+    ToggleButton tbPanelSetRemote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,11 +77,17 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         navigationView.setNavigationItemSelectedListener(this);
 
 
+
         myNotification = new MyNotification(ActivityFirst.this);
         RemoteViews remoteViews = myNotification.getRemoteViews();
 
         clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         clipboardManager.addPrimaryClipChangedListener(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        editor = sharedPreferences.edit();
+
+        tbPanelSetRemote = findViewById(R.id.tbPanelSetRemote);
+        tbPanelSetRemote.setOnCheckedChangeListener(this);
 
         try {
             socket = IO.socket("http://calisma.herokuapp.com/");
@@ -196,13 +211,7 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
-    }
-
     public void clickSetting(MenuItem item) {
-        Toast.makeText(this, "tıklandı", Toast.LENGTH_SHORT).show();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.openDrawer(Gravity.END);
     }
@@ -210,6 +219,11 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         return true;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        Toast.makeText(this, "Tıklanıldı", Toast.LENGTH_SHORT).show();
     }
 
     public static class PlaceholderFragment extends Fragment {

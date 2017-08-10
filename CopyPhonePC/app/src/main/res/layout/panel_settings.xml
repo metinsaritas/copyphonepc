@@ -6,42 +6,46 @@
 
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/tvPanelSetRemote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/toggleButton4"
+        android:layout_alignBottom="@+id/tbPanelSetRemote"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView3"
-        android:layout_toStartOf="@+id/toggleButton3"
+        android:layout_below="@+id/tvPanelGetRemote"
+        android:layout_toStartOf="@+id/tbPanelGetRemote"
+        android:gravity="center|left"
         android:text="Set remote copied"
-        android:gravity="center|left"/>
+        android:fontFamily="@font/open_sans_light"
+        android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/tvPanelGetRemote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/toggleButton3"
+        android:layout_alignBottom="@+id/tbPanelGetRemote"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/toggleButton3"
+        android:layout_toStartOf="@+id/tbPanelGetRemote"
+        android:gravity="center|left"
         android:text="Get remote copied"
-        android:gravity="center|left"/>
+        android:fontFamily="@font/open_sans_light"
+        android:textSize="18sp" />
 
     <ToggleButton
-        android:id="@+id/toggleButton3"
+        android:id="@+id/tbPanelGetRemote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ToggleButton"
+        android:checked="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"/>
 
 
     <ToggleButton
-        android:id="@+id/toggleButton4"
+        android:id="@+id/tbPanelSetRemote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ToggleButton"
-        android:layout_below="@+id/textView3"
-        android:layout_alignParentEnd="true" />
+        android:layout_below="@+id/tvPanelGetRemote"
+        android:layout_alignParentEnd="true"
+        android:checked="true"/>
 
 </RelativeLayout>
