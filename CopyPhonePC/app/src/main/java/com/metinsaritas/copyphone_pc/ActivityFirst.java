@@ -3,7 +3,6 @@ package com.metinsaritas.copyphone_pc;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.SharedPreferences;
-import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -53,8 +52,8 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
-    ToggleButton tbPanelSetRemote;
-
+    private ToggleButton tbPanelSetRemote;
+    private ToggleButton tbPanelGetRemote;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +87,12 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
 
         tbPanelSetRemote = findViewById(R.id.tbPanelSetRemote);
         tbPanelSetRemote.setOnCheckedChangeListener(this);
+        tbPanelSetRemote.setChecked(sharedPreferences.getBoolean("tbPanelSetRemote",true));
+
+        tbPanelGetRemote = findViewById(R.id.tbPanelGetRemote);
+        tbPanelGetRemote.setOnCheckedChangeListener(this);
+        tbPanelGetRemote.setChecked(sharedPreferences.getBoolean("tbPanelGetRemote",true));
+
 
         try {
             socket = IO.socket("http://calisma.herokuapp.com/");
@@ -223,7 +228,13 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        Toast.makeText(this, "Tıklanıldı", Toast.LENGTH_SHORT).show();
+        if (compoundButton.getId() == R.id.tbPanelSetRemote) {
+            editor.putBoolean("tbPanelSetRemote", b);
+            editor.commit();
+        } else if (compoundButton.getId() == R.id.tbPanelGetRemote) {
+            editor.putBoolean("tbPanelGetRemote", b);
+            editor.commit();
+        }
     }
 
     public static class PlaceholderFragment extends Fragment {
@@ -247,12 +258,10 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
             View rootView;
             int section = getArguments().getInt(ARG_SECTION_NUMBER);
             if (section == 1) {
-                rootView = inflater.inflate(R.layout.fragment_activity_first, container, false);
+                rootView = inflater.inflate(R.layout.fragment_main, container, false);
             } else {
                 rootView = inflater.inflate(R.layout.fragment_allcopied, container, false);
             }
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            //textview null geldifalan ife koyarak al
             return rootView;
         }
     }
