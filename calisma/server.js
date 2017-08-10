@@ -32,5 +32,5 @@ io.on('connection', function(socket){
 });
 
 http.listen(port, function(){
-  console.log('listening onn:'+port);
+  console.log('listening onnnn:'+port);
 });

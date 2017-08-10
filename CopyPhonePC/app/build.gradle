@@ -31,4 +31,5 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
 
+    implementation 'com.android.support:design:26.0.1'
 }
