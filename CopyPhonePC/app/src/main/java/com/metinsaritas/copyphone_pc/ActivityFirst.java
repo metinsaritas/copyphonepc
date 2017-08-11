@@ -25,6 +25,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,6 +40,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ActivityFirst extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ClipboardManager.OnPrimaryClipChangedListener, CompoundButton.OnCheckedChangeListener {
     private SectionsPagerAdapter mSectionsPagerAdapter;
@@ -46,54 +50,37 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
 
     private ClipboardManager clipboardManager;
     private Socket socket;
-    String lastCopied = "";
-    boolean otherCopying = false;
     private MyNotification myNotification;
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
+    public SharedPreferences sharedPreferences;
+    public SharedPreferences.Editor editor;
 
     private ToggleButton tbPanelSetRemote;
     private ToggleButton tbPanelGetRemote;
+
+
+    private String lastCopied = "";
+    private boolean otherCopying = false;
+
+    private ArrayList<User> userList = new ArrayList<User>();
+    private ListAdapterUsers adapterUsers;
+    private ListView lvMainUsers;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        initalizeComponent();
+        initalizeSocket();
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-
-        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
-
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-
-
-        myNotification = new MyNotification(ActivityFirst.this);
         RemoteViews remoteViews = myNotification.getRemoteViews();
+        remoteViews.setTextViewText(R.id.tvNotificationRoomId, "Not connected");
 
-        clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        clipboardManager.addPrimaryClipChangedListener(this);
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        editor = sharedPreferences.edit();
+        myNotification.showNotify();
 
-        tbPanelSetRemote = findViewById(R.id.tbPanelSetRemote);
-        tbPanelSetRemote.setOnCheckedChangeListener(this);
-        tbPanelSetRemote.setChecked(sharedPreferences.getBoolean("tbPanelSetRemote",true));
+    }
 
-        tbPanelGetRemote = findViewById(R.id.tbPanelGetRemote);
-        tbPanelGetRemote.setOnCheckedChangeListener(this);
-        tbPanelGetRemote.setChecked(sharedPreferences.getBoolean("tbPanelGetRemote",true));
-
-
+    private void initalizeSocket() {
         try {
             socket = IO.socket("http://calisma.herokuapp.com/");
             socket.on("otherCopied", otherCopied);
@@ -103,9 +90,20 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(ActivityFirst.this, "Connected", Toast.LENGTH_SHORT).show();
-                            myNotification.getRemoteViews().setImageViewResource(R.id.ivNotificationStatus, R.drawable.status_green);
+                            myNotification.getRemoteViews().setImageViewResource(R.id.ivNotificationStatus, R.drawable.status_blue);
                             myNotification.showNotify();
+                            JSONObject jsonObject =new JSONObject();
+                            String roomName = sharedPreferences.getString("roomName",null);
+                            boolean hasRoom = roomName != null;
+                            try {
+                                jsonObject.put("from","phone");
+                                jsonObject.put("hasRoom", hasRoom);
+                                jsonObject.put("roomName", roomName);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                            sendToSocket("connectRoom", jsonObject);
                         }
                     });
 
@@ -144,10 +142,42 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
+    }
 
-        remoteViews.setTextViewText(R.id.tvNotificationRoomId, "Not connected");
+    private void initalizeComponent() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        myNotification.showNotify();
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        myNotification = new MyNotification(ActivityFirst.this);
+
+        clipboardManager = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        clipboardManager.addPrimaryClipChangedListener(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        editor = sharedPreferences.edit();
+
+        tbPanelSetRemote = findViewById(R.id.tbPanelSetRemote);
+        tbPanelSetRemote.setOnCheckedChangeListener(this);
+        tbPanelSetRemote.setChecked(sharedPreferences.getBoolean("tbPanelSetRemote",true));
+
+        tbPanelGetRemote = findViewById(R.id.tbPanelGetRemote);
+        tbPanelGetRemote.setOnCheckedChangeListener(this);
+        tbPanelGetRemote.setChecked(sharedPreferences.getBoolean("tbPanelGetRemote",true));
+
+        userList.add(new User("Yazim"));
+        adapterUsers = new ListAdapterUsers(getApplicationContext(), userList);
 
     }
 
@@ -186,22 +216,27 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         try {
             json.put("copiedText", copiedText);
             json.put("from","phone");
-            sendToSocket(json);
+            sendCopied(json);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
     }
 
-    private void sendToSocket(JSONObject json) throws JSONException {
+    private void sendCopied(JSONObject json) throws JSONException {
         if (socket == null || json == null || !socket.connected()) return;
         String copiedText = json.getString("copiedText");
         if (lastCopied.equals(copiedText)) return;
         lastCopied = copiedText;
 
-        // ben kopyaladıysm emit et
-        socket.emit("dataCopied", json);
+        sendToSocket("dataCopied", json);
 
+    }
+
+    private boolean sendToSocket(String event, JSONObject json) {
+        if (socket == null || json == null || !socket.connected()) return false;
+        socket.emit(event, json);
+        return true;
     }
 
     @Override
@@ -259,6 +294,16 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
             int section = getArguments().getInt(ARG_SECTION_NUMBER);
             if (section == 1) {
                 rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+                ActivityFirst activityFirst = (ActivityFirst) getActivity();
+                activityFirst.lvMainUsers = rootView.findViewById(R.id.lvMainUsers);
+
+                activityFirst.lvMainUsers.setAdapter(activityFirst.adapterUsers);
+
+                EditText etMainRoom = rootView.findViewById(R.id.etMainRoom);
+                etMainRoom.setText(activityFirst.sharedPreferences.getString("roomName",""));
+
+
             } else {
                 rootView = inflater.inflate(R.layout.fragment_allcopied, container, false);
             }

@@ -1,26 +1,43 @@
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayout"
-    android:layout_width="match_parent"
+<LinearLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.metinsaritas.copyphone_pc.ActivityFirst$PlaceholderFragment">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="10dp"
+    android:orientation="vertical">
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Connect Room"
-        android:id="@+id/button"
-        tools:layout_editor_absoluteY="16dp"
-        tools:layout_editor_absoluteX="236dp"
-        tools:ignore="MissingConstraints" />
+        android:padding="10dp"
+        android:background="@color/material_gray"
+        android:layout_marginBottom="10dp" android:orientation="horizontal">
 
-    <EditText
-        android:layout_width="237dp"
-        android:layout_height="wrap_content"
-        tools:layout_editor_absoluteY="16dp"
-        tools:layout_editor_absoluteX="0dp"
-        android:textAlignment="center"
-        tools:ignore="MissingConstraints" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:fontFamily="@font/open_sans_light"
+            android:text="Room"
+            android:layout_marginRight="10dp"/>
+        <EditText
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:textAlignment="center"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans_light"
+            android:id="@+id/etMainRoom"/>
 
-</android.support.constraint.ConstraintLayout>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Connect"/>
+
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/lvMainUsers"
+        android:background="@color/material_gray"
+        ></ListView>
+
+</LinearLayout>
