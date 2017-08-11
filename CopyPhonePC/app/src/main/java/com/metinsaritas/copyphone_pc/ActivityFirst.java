@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -44,6 +45,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ActivityFirst extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ClipboardManager.OnPrimaryClipChangedListener, CompoundButton.OnCheckedChangeListener {
+
+    //public static String SOCKET_URL = "http://"+"10.240.1.25"+":3000/";//"
+    public static String SOCKET_URL = "http://calisma.herokuapp.com/";
+
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private NavigationView navigationView;
@@ -64,6 +69,8 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
     private ArrayList<User> userList = new ArrayList<User>();
     private ListAdapterUsers adapterUsers;
     private ListView lvMainUsers;
+    private EditText etMainRoom;
+    private Button btnMainConnect;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +81,7 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         initalizeSocket();
 
         RemoteViews remoteViews = myNotification.getRemoteViews();
-        remoteViews.setTextViewText(R.id.tvNotificationRoomId, "Not connected");
+        remoteViews.setTextViewText(R.id.tvNotificationRoomName, "Not connected");
 
         myNotification.showNotify();
 
@@ -82,7 +89,7 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
 
     private void initalizeSocket() {
         try {
-            socket = IO.socket("http://calisma.herokuapp.com/");
+            socket = IO.socket(SOCKET_URL);
             socket.on("otherCopied", otherCopied);
             socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
                 @Override
@@ -92,21 +99,64 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                         public void run() {
                             myNotification.getRemoteViews().setImageViewResource(R.id.ivNotificationStatus, R.drawable.status_blue);
                             myNotification.showNotify();
-                            JSONObject jsonObject =new JSONObject();
+                            JSONObject jsonObject = new JSONObject();
                             String roomName = sharedPreferences.getString("roomName",null);
                             boolean hasRoom = roomName != null;
                             try {
                                 jsonObject.put("from","phone");
                                 jsonObject.put("hasRoom", hasRoom);
                                 jsonObject.put("roomName", roomName);
+                                jsonObject.put("clickConnect", false);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    btnMainConnect.setEnabled(false);
+                                    btnMainConnect.setText("Connecting");
+                                    etMainRoom.setEnabled(false);
+                                }
+                            });
 
                             sendToSocket("connectRoom", jsonObject);
                         }
                     });
 
+                }
+            });
+
+
+            socket.on("connectRoom", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    JSONObject jsonObject;
+                    String roomName = "";
+                    int member = 4;
+                    try {
+                        jsonObject = (JSONObject) args[0];
+                        roomName = jsonObject.getString("roomName");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    myNotification.getRemoteViews().setImageViewResource(R.id.ivNotificationStatus, R.drawable.status_green);
+                    myNotification.getRemoteViews().setTextViewText(R.id.tvNotificationRoomName, roomName);
+                    myNotification.showNotify();
+                    final String finalRoomName = roomName;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            etMainRoom.setText(finalRoomName);
+                            etMainRoom.setEnabled(true);
+                            btnMainConnect.setEnabled(true);
+                            btnMainConnect.setText("Connect");
+                        }
+                    });
+
+                    editor.putString("roomName", roomName);
+                    editor.commit();
                 }
             });
 
@@ -193,7 +243,9 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                 jsonObject = (JSONObject) args[0];
                 String copiedText = jsonObject.getString("copiedText");
                 otherCopying = true;
-                clipboardManager.setPrimaryClip(ClipData.newPlainText("text", copiedText));
+                if (tbPanelGetRemote.isChecked()) {
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText("text", copiedText));
+                }
             }
             catch (Exception e) {
                 Log.d("Soket", e.getMessage());
@@ -203,6 +255,8 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
     }; @Override
     public void onPrimaryClipChanged() {
         Log.d("Soket","onPrimaryClipChanged");
+
+        if (!tbPanelSetRemote.isChecked()) return;
         if (otherCopying) {
             otherCopying = false;
             return;
@@ -217,6 +271,7 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
             json.put("copiedText", copiedText);
             json.put("from","phone");
             sendCopied(json);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -272,6 +327,19 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         }
     }
 
+    public void clickConnect(View view) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("from","phone");
+            jsonObject.put("hasRoom", true);
+            jsonObject.put("roomName", etMainRoom.getText().toString());
+            //jsonObject.put("clickConnect", true);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendToSocket("connectRoom", jsonObject);
+    }
+
     public static class PlaceholderFragment extends Fragment {
 
         private static final String ARG_SECTION_NUMBER = "section_number";
@@ -300,8 +368,9 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
 
                 activityFirst.lvMainUsers.setAdapter(activityFirst.adapterUsers);
 
-                EditText etMainRoom = rootView.findViewById(R.id.etMainRoom);
-                etMainRoom.setText(activityFirst.sharedPreferences.getString("roomName",""));
+                activityFirst.etMainRoom = rootView.findViewById(R.id.etMainRoom);
+                activityFirst.etMainRoom.setText(activityFirst.sharedPreferences.getString("roomName",""));
+                activityFirst.btnMainConnect = rootView.findViewById(R.id.btnMainConnect);
 
 
             } else {

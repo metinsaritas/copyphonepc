@@ -41,14 +41,14 @@
         android:layout_alignStart="@+id/tvNotificationRoomLabel" />
 
     <TextView
-        android:id="@+id/tvNotificationRoomId"
+        android:id="@+id/tvNotificationRoomName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/tvNotificationRoomLabel"
         android:minWidth="100dp"
         android:padding="3dp"
-        android:text="FBKDBHRU" />
+        android:text="Not connected!" />
 
     <TextView
         android:id="@+id/tvNotificationMemberCount"
@@ -57,7 +57,7 @@
         android:padding="3dp"
         android:text="0"
         android:minWidth="100dp"
-        android:layout_below="@+id/tvNotificationRoomId"
+        android:layout_below="@+id/tvNotificationRoomName"
         android:layout_marginTop="1dp"
         android:layout_toEndOf="@+id/tvNotificationRoomLabel" />
 
