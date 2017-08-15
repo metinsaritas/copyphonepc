@@ -17,6 +17,7 @@
             android:textSize="20sp"
             android:fontFamily="@font/open_sans_light"
             android:text="Room"
+            android:minWidth="60dp"
             android:layout_marginRight="10dp"/>
         <EditText
             android:layout_weight="1"
@@ -24,22 +25,85 @@
             android:textAlignment="center"
             android:layout_height="wrap_content"
             android:fontFamily="@font/open_sans_light"
+            android:longClickable="false"
+            android:singleLine="true"
+            android:maxLength="30"
             android:id="@+id/etMainRoom"/>
 
         <Button
             android:id="@+id/btnMainConnect"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:onClick="clickConnect"
+            android:textAllCaps="false"
             android:text="Connect" />
 
     </LinearLayout>
 
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/lvMainUsers"
-        android:background="@color/material_gray"
-        ></ListView>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/llMainHolder">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:background="@color/material_gray"
+            android:layout_marginBottom="10dp" android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:fontFamily="@font/open_sans_light"
+                android:text="Test"
+                android:minWidth="60dp"
+                android:layout_marginRight="10dp"/>
+
+            <EditText
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:textAlignment="center"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/open_sans_light"
+                android:longClickable="false"
+                android:singleLine="true"
+                android:id="@+id/etMainArea"/>
+
+            <Button
+                android:id="@+id/btnMainCopy"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:onClick="clickCopy"
+                android:text="C" />
+
+            <Button
+                android:id="@+id/btnMainPaste"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:onClick="clickPaste"
+                android:text="P" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Members"
+            android:fontFamily="@font/open_sans_light"
+            android:textSize="20sp"
+            android:layout_marginBottom="10dp"
+            />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/lvMainUsers"
+            android:background="@drawable/rounded_all_gray"
+            ></ListView>
+    </LinearLayout>
+
 
 </LinearLayout>

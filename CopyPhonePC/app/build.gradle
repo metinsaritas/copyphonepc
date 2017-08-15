@@ -30,6 +30,6 @@ dependencies {
     compile('com.github.nkzawa:socket.io-client:0.3.0') {
         exclude group: 'org.json', module: 'json'
     }
-
     implementation 'com.android.support:design:26.0.1'
+    implementation 'com.google.code.gson:gson:2.8.1'
 }

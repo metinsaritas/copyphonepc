@@ -48,6 +48,7 @@
         android:layout_toEndOf="@+id/tvNotificationRoomLabel"
         android:minWidth="100dp"
         android:padding="3dp"
+        android:singleLine="true"
         android:text="Not connected!" />
 
     <TextView
@@ -56,11 +57,13 @@
         android:layout_height="wrap_content"
         android:padding="3dp"
         android:text="0"
+        android:singleLine="true"
         android:minWidth="100dp"
         android:layout_below="@+id/tvNotificationRoomName"
         android:layout_marginTop="1dp"
         android:layout_toEndOf="@+id/tvNotificationRoomLabel" />
 
+    <!--
     <Button
         android:id="@+id/tvNotificationStatus"
         android:layout_width="wrap_content"
@@ -69,6 +72,6 @@
         android:text="Off"
         android:textAllCaps="false"
         android:layout_alignBottom="@+id/tvNotificationMemberCount"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true" />-->
 
 </RelativeLayout>

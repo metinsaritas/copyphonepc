@@ -1,5 +1,5 @@
-﻿var socket = io("http://calisma.herokuapp.com/");
-//var socket = io("http://localhost:3000");
+﻿//var socket = io("http://calisma.herokuapp.com/");
+var socket = io("http://localhost:3000");
 
 function copy(str) {
     var sandbox = $('#sandbox').val(str).select();

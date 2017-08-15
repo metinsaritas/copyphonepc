@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="6dp">
+
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ua_edge"
+        android:id="@+id/ivLvFrom"
+        android:layout_gravity="center"/>
 
     <TextView
-        android:id="@+id/tvLvUsersDeneme"
+        android:id="@+id/tvLvUserName"
+        android:layout_weight="1"
         android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:textSize="16sp"
+        android:layout_marginLeft="10dp"
+        android:gravity="center|left"
+        android:layout_gravity="center"
+        android:fontFamily="@font/open_sans_light"
+        android:textColor="#697981"
+        android:singleLine="true"
+        android:text="Metin" />
+
+    <ToggleButton
+        android:padding="6dp"
+        android:id="@+id/tbUsersActive"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:layout_weight="0"
+        android:checked="true"/>
+
 </LinearLayout>

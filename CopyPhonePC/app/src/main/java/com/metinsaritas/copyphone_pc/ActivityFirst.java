@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RemoteViews;
 import android.widget.TextView;
@@ -36,18 +37,19 @@ import android.widget.ToggleButton;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ActivityFirst extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ClipboardManager.OnPrimaryClipChangedListener, CompoundButton.OnCheckedChangeListener {
 
-    //public static String SOCKET_URL = "http://"+"10.240.1.25"+":3000/";//"
-    public static String SOCKET_URL = "http://calisma.herokuapp.com/";
+    public static String SOCKET_URL = "http://"+"10.240.10.88"+":3000/";//"
+    //public static String SOCKET_URL = "http://calisma.herokuapp.com/";
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
@@ -66,11 +68,21 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
     private String lastCopied = "";
     private boolean otherCopying = false;
 
-    private ArrayList<User> userList = new ArrayList<User>();
+
     private ListAdapterUsers adapterUsers;
     private ListView lvMainUsers;
     private EditText etMainRoom;
     private Button btnMainConnect;
+    private EditText etMainArea;
+    private LinearLayout llMainHolder;
+    private boolean connectedRoom = false;
+    private User me = new User();
+    private EditText etPanelUserName;
+
+    private ArrayList<User> userList = new ArrayList<User>();
+    private Room room;
+    public static String userId;
+    private DrawerLayout drawer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +91,7 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
 
         initalizeComponent();
         initalizeSocket();
+
 
         RemoteViews remoteViews = myNotification.getRemoteViews();
         remoteViews.setTextViewText(R.id.tvNotificationRoomName, "Not connected");
@@ -103,9 +116,10 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                             String roomName = sharedPreferences.getString("roomName",null);
                             boolean hasRoom = roomName != null;
                             try {
-                                jsonObject.put("from","phone");
+                                jsonObject.put("from","android");
                                 jsonObject.put("hasRoom", hasRoom);
                                 jsonObject.put("roomName", roomName);
+                                jsonObject.put("name", etPanelUserName.getText().toString());
                                 jsonObject.put("clickConnect", false);
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -117,6 +131,7 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                                     btnMainConnect.setEnabled(false);
                                     btnMainConnect.setText("Connecting");
                                     etMainRoom.setEnabled(false);
+                                    llMainHolder.setVisibility(View.INVISIBLE);
                                 }
                             });
 
@@ -137,6 +152,7 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                     try {
                         jsonObject = (JSONObject) args[0];
                         roomName = jsonObject.getString("roomName");
+                        userId = jsonObject.getJSONObject("user").getString("userId");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -151,7 +167,10 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                             etMainRoom.setText(finalRoomName);
                             etMainRoom.setEnabled(true);
                             btnMainConnect.setEnabled(true);
-                            btnMainConnect.setText("Connect");
+                            btnMainConnect.setText("Disconnect");
+                            connectedRoom = true;
+                            etMainRoom.setEnabled(false);
+                            llMainHolder.setVisibility(View.VISIBLE);
                         }
                     });
 
@@ -183,8 +202,39 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                             Toast.makeText(ActivityFirst.this, "Disconnected", Toast.LENGTH_SHORT).show();
                             myNotification.getRemoteViews().setImageViewResource(R.id.ivNotificationStatus, R.drawable.status_red);
                             myNotification.showNotify();
+                            llMainHolder.setVisibility(View.INVISIBLE);
+                            connectedRoom = false;
                         }
                     });
+                }
+            });
+
+            socket.on("roomUpdated", new Emitter.Listener() {
+                @Override
+                public void call(Object... args) {
+                    if (args.length <= 0) {
+                        return;
+                    }
+
+                    JSONObject jsonObject;
+                    try {
+                        jsonObject = (JSONObject) args[0];
+                        Gson gson = new Gson();
+                        room = gson.fromJson(jsonObject.toString(), Room.class);
+                        userList = room.users;
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapterUsers = new ListAdapterUsers(getApplicationContext(), userList);
+                                lvMainUsers.setAdapter(adapterUsers);
+                                myNotification.getRemoteViews().setTextViewText(R.id.tvNotificationMemberCount,""+userList.size());
+                                myNotification.showNotify();
+                            }
+                        });
+                    }
+                    catch (Exception e) {
+                        Log.d("Soket", e.getMessage());
+                    }
                 }
             });
 
@@ -210,6 +260,34 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        etPanelUserName.setText(sharedPreferences.getString("name","User"));
+                    }
+                });
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
 
         myNotification = new MyNotification(ActivityFirst.this);
 
@@ -226,8 +304,9 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         tbPanelGetRemote.setOnCheckedChangeListener(this);
         tbPanelGetRemote.setChecked(sharedPreferences.getBoolean("tbPanelGetRemote",true));
 
-        userList.add(new User("Yazim"));
-        adapterUsers = new ListAdapterUsers(getApplicationContext(), userList);
+        me.Name = sharedPreferences.getString("name","User");
+        etPanelUserName = findViewById(R.id.etPanelUserName);
+        etPanelUserName.setText(me.Name);
 
     }
 
@@ -242,8 +321,11 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
             try {
                 jsonObject = (JSONObject) args[0];
                 String copiedText = jsonObject.getString("copiedText");
+                String sender = jsonObject.getString("sender");
                 otherCopying = true;
                 if (tbPanelGetRemote.isChecked()) {
+                    boolean active = Room.Settings.containsKey(sender);
+                    if (!active)
                     clipboardManager.setPrimaryClip(ClipData.newPlainText("text", copiedText));
                 }
             }
@@ -307,7 +389,6 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
     }
 
     public void clickSetting(MenuItem item) {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.openDrawer(Gravity.END);
     }
 
@@ -329,15 +410,66 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
 
     public void clickConnect(View view) {
         JSONObject jsonObject = new JSONObject();
+        if (connectedRoom) { /*Log out*/
+            try {
+                jsonObject.put("from","phone");
+                jsonObject.put("roomName", etMainRoom.getText().toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            sendToSocket("disconnectRoom", jsonObject);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    llMainHolder.setVisibility(View.INVISIBLE);
+                    btnMainConnect.setText("Connect");
+                    connectedRoom = false;
+                    etMainRoom.setEnabled(true);
+                }
+            });
+            return;
+        }
+
         try {
             jsonObject.put("from","phone");
             jsonObject.put("hasRoom", true);
             jsonObject.put("roomName", etMainRoom.getText().toString());
             //jsonObject.put("clickConnect", true);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    btnMainConnect.setText("Connecting");
+                    connectedRoom = true;
+                    etMainRoom.setEnabled(false);
+                }
+            });
         } catch (JSONException e) {
             e.printStackTrace();
         }
         sendToSocket("connectRoom", jsonObject);
+    }
+
+    public void clickCopy(View view) {
+        if (etMainArea == null) return;
+        clipboardManager.setPrimaryClip(ClipData.newPlainText("text", etMainArea.getText().toString()));
+    }
+
+    public void clickPaste(View view) {
+        if (etMainArea == null) return;
+        etMainArea.setText(clipboardManager.getText());
+    }
+
+    public void clickApplyUserName(View view) {
+        String name = etPanelUserName.getText().toString();
+        editor.putString("name", name);
+        editor.commit();
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("name", name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendToSocket("changeName", jsonObject);
     }
 
     public static class PlaceholderFragment extends Fragment {
@@ -371,6 +503,8 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                 activityFirst.etMainRoom = rootView.findViewById(R.id.etMainRoom);
                 activityFirst.etMainRoom.setText(activityFirst.sharedPreferences.getString("roomName",""));
                 activityFirst.btnMainConnect = rootView.findViewById(R.id.btnMainConnect);
+                activityFirst.etMainArea = rootView.findViewById(R.id.etMainArea);
+                activityFirst.llMainHolder = rootView.findViewById(R.id.llMainHolder);
 
 
             } else {

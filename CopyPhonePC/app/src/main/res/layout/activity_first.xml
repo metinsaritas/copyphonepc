@@ -55,7 +55,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/tab_text_1"
-                />
+                >
+
+
+
+            </android.support.design.widget.TabItem>
 
             <android.support.design.widget.TabItem
                 android:id="@+id/tabItem2"

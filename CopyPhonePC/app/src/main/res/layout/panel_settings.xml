@@ -5,18 +5,7 @@
     android:padding="10dp">
 
 
-    <TextView
-        android:id="@+id/tvPanelSetRemote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/tbPanelSetRemote"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvPanelGetRemote"
-        android:layout_toStartOf="@+id/tbPanelGetRemote"
-        android:gravity="center|left"
-        android:text="Set remote copied"
-        android:fontFamily="@font/open_sans_light"
-        android:textSize="18sp" />
+
 
     <TextView
         android:id="@+id/tvPanelGetRemote"
@@ -31,21 +20,63 @@
         android:fontFamily="@font/open_sans_light"
         android:textSize="18sp" />
 
-    <ToggleButton
-        android:id="@+id/tbPanelGetRemote"
+    <TextView
+        android:id="@+id/tvPanelSetRemote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tbPanelSetRemote"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvPanelGetRemote"
+        android:layout_toStartOf="@+id/tbPanelGetRemote"
+        android:gravity="center|left"
+        android:text="Set remote copied"
+        android:fontFamily="@font/open_sans_light"
+        android:textSize="18sp" />
+
+    <ToggleButton
+        android:id="@+id/tbPanelGetRemote"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
         android:checked="true"
+        android:textAllCaps="false"
+        android:fontFamily="@font/open_sans_light"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"/>
 
 
     <ToggleButton
         android:id="@+id/tbPanelSetRemote"
-        android:layout_width="wrap_content"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvPanelGetRemote"
+        android:textAllCaps="false"
+        android:fontFamily="@font/open_sans_light"
+        android:checked="true"
+        android:layout_below="@+id/tbPanelGetRemote"
+        android:layout_alignParentEnd="true" />
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/etPanelUserName"
+        android:text="User"
+        android:fontFamily="@font/open_sans_light"
+        android:hint="Name to be displayed"
+        android:textSize="17sp"
+        android:layout_alignBottom="@+id/button"
+        android:maxLength="20"
+        android:singleLine="true"
+        android:layout_toStartOf="@+id/tbPanelSetRemote" />
+
+    <Button
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:text="Apply"
+        android:fontFamily="@font/open_sans_light"
+        android:onClick="clickApplyUserName"
+        android:layout_below="@+id/tbPanelSetRemote"
         android:layout_alignParentEnd="true"
-        android:checked="true"/>
+        android:id="@+id/button" />
 
 </RelativeLayout>

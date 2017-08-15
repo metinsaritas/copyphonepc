@@ -5,16 +5,17 @@ var io = require('socket.io')(http);
 
 var port = process.env.PORT || 3000;
 
-/*app.use(express.static("public"));
+app.use(express.static("public"));
 
 app.get('/', function(req, res){
   res.sendFile('/index.html');
-});*/
+});
 
 //
 
 const digitChars = ["A","B","C","D","E","F","G","H","J","K","L","M","N","P","R","S","T","U","W","X","V","Z","1","2","3","4","5","6","7","8","9"];
-const connectRoomKeys = Object.keys({"from":null,"roomName":null,"hasRoom":null});
+const connectRoomKeys = Object.keys({"from":null,"roomName":null,"hasRoom":null,"name":null});
+const changeNameKeys = Object.keys({"name":null});
 var rooms = {};
 
 function dataError(data,socket) {	
@@ -75,6 +76,8 @@ function logoutRoom (socket) {
 			} else {
 				delete rooms[socket.infos.roomName].users[socket.infos.userId];
 			}
+			
+			roomUpdate(socket.infos.room.users);
 		}
 	}
 	
@@ -94,13 +97,17 @@ io.on('connection', function(socket){
 	  if (dataError(data,socket)) return;
 	  
 	  //bura hatli gibi
-	  var userOnRoom = Object.keys(rooms[socket.infos.roomName].users);
-	  userOnRoom.forEach(function(val,index) {
-		  if (val == socket.infos.userId)
-			  return;
-		  var roomSocket = rooms[socket.infos.roomName].users[val].socket;
-		  roomSocket.emit("otherCopied", data);
-	  });
+	  if ((socket.infos.roomName in rooms)) {
+	  
+		  var userOnRoom = Object.keys(rooms[socket.infos.roomName].users);
+		  userOnRoom.forEach(function(val,index) {
+			  if (val == socket.infos.userId)
+				  return;
+			  var roomSocket = rooms[socket.infos.roomName].users[val].socket;
+			  data.sender = socket.infos.userId;
+			  roomSocket.emit("otherCopied", data);
+		  });
+	  }
   });
   
   socket.on("connectRoom", function(data){
@@ -125,24 +132,59 @@ io.on('connection', function(socket){
 	  
 	  
 	  var time = (new Date()).toGMTString();
-	  rooms[roomName].users[userId] = {"from":data.from,"time":time,socket:socket};
+	  rooms[roomName].users[userId] = {"from":data.from,"time":time,"socket":socket,"name":data.name};
 	  
+	  socket.infos.room = rooms[roomName];
 	  socket.infos.roomName = roomName;
+	  socket.infos.name = data.name;
 	  
-	  socket.emit("connectRoom", {"from":"server","roomName":roomName,"query":data});
+	  var result = {"from":"server","roomName":roomName,"query":data,"user":null};
+	  result.user = {"from":data.from,"time":time,"name":data.name,"userId":userId};
+	  socket.emit("connectRoom", result);
+	  roomUpdate(socket.infos.room.users);
 	  
-	  console.log(data);
+	  //console.log(data);
   });
   
   socket.on("disconnect", function(data) {
 	  logoutRoom(socket);
 	  console.log("Biri cikti");
   });
+  
+  socket.on("disconnectRoom", function(data) {
+	  logoutRoom(socket);
+  });
+  
+  socket.on("changeName", function(data) {
+	if (dataError(data,socket)) return;
+	if (jsonError(data, changeNameKeys, socket)) return;
+	
+	socket.infos.name = data.name;
+	socket.infos.room.users[socket.infos.userId].name = data.name;
+	roomUpdate(socket.infos.room.users);
+  });
 });
 
 http.listen(port, function(){
   console.log('listening on - '+port);
 });
+
+function roomUpdate (roomUsers) {
+	console.log("Room updating");
+	var withoutSocket = {"namelist":[],"users":[]};
+	
+	var users = Object.keys(roomUsers);
+	users.forEach(function(val,index){
+		var data = roomUsers[val];
+		withoutSocket.users.push({"id":val,"from":data.from,"time":data.time,"Name":data.name});
+		withoutSocket.namelist.push(val);
+	});
+	
+	users.forEach(function(val,index){
+		var socket = roomUsers[val].socket;
+		socket.emit("roomUpdated", withoutSocket);
+	});
+}
 
 /*
 setInterval(function(){

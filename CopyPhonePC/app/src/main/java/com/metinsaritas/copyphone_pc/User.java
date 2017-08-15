@@ -5,11 +5,12 @@ package com.metinsaritas.copyphone_pc;
  */
 
 class User {
-    private String agent;
-    private String socket;
+    public String from;
+    public String time;
+    public String id;
 
-    public String deneme;
-    public User (String deneme) {
-        this.deneme = deneme;
+    public String Name = "User";
+    public User () {
+
     }
 }
