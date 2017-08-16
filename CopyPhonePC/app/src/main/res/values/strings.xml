@@ -10,12 +10,7 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string-array name="listeyazilar">
-        <item>Denem0</item>
-        <item>Denem1</item>
-        <item>Denem2</item>
-        <item>Denem3</item>
-        <item>Denem4</item>
-        <item>Denem5</item>
+    <string-array name="context_menu_all_copied">
+        <item>Remove</item>
     </string-array>
 </resources>

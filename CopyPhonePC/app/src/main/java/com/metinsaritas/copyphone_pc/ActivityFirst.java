@@ -24,13 +24,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RemoteViews;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -38,18 +39,19 @@ import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ActivityFirst extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ClipboardManager.OnPrimaryClipChangedListener, CompoundButton.OnCheckedChangeListener {
 
-    public static String SOCKET_URL = "http://"+"10.240.10.88"+":3000/";//"
-    //public static String SOCKET_URL = "http://calisma.herokuapp.com/";
+    //public static String SOCKET_URL = "http://"+"10.240.10.88"+":3000/";
+    public static String SOCKET_URL = "http://calisma.herokuapp.com/";
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
@@ -66,7 +68,7 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
 
 
     private String lastCopied = "";
-    private boolean otherCopying = false;
+    private String receiveCopied = "";
 
 
     private ListAdapterUsers adapterUsers;
@@ -80,9 +82,15 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
     private EditText etPanelUserName;
 
     private ArrayList<User> userList = new ArrayList<User>();
-    private Room room;
+    private RequestRoom requestRoom;
     public static String userId;
     private DrawerLayout drawer;
+
+    private ListView lvAllCopiedCopy;
+    private ListAdapterCopy adapterCopy;
+    private ArrayList<Copy> copyList = new ArrayList<Copy>();
+
+    private EditText etPanelMaxCopiedCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -203,6 +211,9 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                             myNotification.getRemoteViews().setImageViewResource(R.id.ivNotificationStatus, R.drawable.status_red);
                             myNotification.showNotify();
                             llMainHolder.setVisibility(View.INVISIBLE);
+                            etMainRoom.setEnabled(true);
+                            btnMainConnect.setEnabled(true);
+                            btnMainConnect.setText("Connect");
                             connectedRoom = false;
                         }
                     });
@@ -220,8 +231,8 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                     try {
                         jsonObject = (JSONObject) args[0];
                         Gson gson = new Gson();
-                        room = gson.fromJson(jsonObject.toString(), Room.class);
-                        userList = room.users;
+                        requestRoom = gson.fromJson(jsonObject.toString(), RequestRoom.class);
+                        userList = requestRoom.users;
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -308,6 +319,10 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         etPanelUserName = findViewById(R.id.etPanelUserName);
         etPanelUserName.setText(me.Name);
 
+        adapterCopy = new ListAdapterCopy(getApplicationContext(), copyList);
+
+        etPanelMaxCopiedCount = findViewById(R.id.etPanelMaxCopiedCount);
+
     }
 
     Emitter.Listener otherCopied = new Emitter.Listener() {
@@ -317,21 +332,38 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                 return;
             }
 
-            JSONObject jsonObject;
-            try {
-                jsonObject = (JSONObject) args[0];
-                String copiedText = jsonObject.getString("copiedText");
-                String sender = jsonObject.getString("sender");
-                otherCopying = true;
-                if (tbPanelGetRemote.isChecked()) {
-                    boolean active = Room.Settings.containsKey(sender);
-                    if (!active)
-                    clipboardManager.setPrimaryClip(ClipData.newPlainText("text", copiedText));
+            final Object json = args[0];
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                        JSONObject jsonObject;
+                        try {
+                            jsonObject = (JSONObject) json;
+                            String copiedText = jsonObject.getString("copiedText");
+                            String sender = jsonObject.getString("sender");
+
+                            Copy copy = new Copy();
+                            copy.copiedText = copiedText;
+                            MyValidator.Validate(copy);
+                            copyList.add(0,copy);
+                            adapterCopy.notifyDataSetChanged();
+                            //listeye ekle listviewi güncelle
+
+                            if (tbPanelGetRemote.isChecked()) {
+                                boolean active = RequestRoom.Settings.containsKey(sender);
+                                if (!active) {
+                                    receiveCopied = copiedText;
+                                    clipboardManager.setPrimaryClip(ClipData.newPlainText("text", copiedText));
+                                }
+                            }
+                        }
+                        catch (Exception e) {
+                            Log.d("Soket", e.getMessage());
+                        }
+
                 }
-            }
-            catch (Exception e) {
-                Log.d("Soket", e.getMessage());
-            }
+            });
 
         }
     }; @Override
@@ -339,14 +371,20 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         Log.d("Soket","onPrimaryClipChanged");
 
         if (!tbPanelSetRemote.isChecked()) return;
-        if (otherCopying) {
-            otherCopying = false;
-            return;
-        }
+
 
         String copiedText = clipboardManager.getText().toString();
         if (copiedText.length() <= 0)
             return;
+
+        if (receiveCopied.equals(copiedText)) return;
+        receiveCopied = copiedText;
+
+        Copy copy = new Copy();
+        copy.copiedText = copiedText;
+        copyList.add(0,copy);
+        adapterCopy.notifyDataSetChanged();
+
 
         JSONObject json = new JSONObject();
         try {
@@ -430,10 +468,16 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
             return;
         }
 
+        if (!socket.connected()) {
+            socket.connect();//@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+            return;
+        }
+
         try {
-            jsonObject.put("from","phone");
+            jsonObject.put("from","android");
             jsonObject.put("hasRoom", true);
             jsonObject.put("roomName", etMainRoom.getText().toString());
+            jsonObject.put("name", etPanelUserName.getText().toString());
             //jsonObject.put("clickConnect", true);
             runOnUiThread(new Runnable() {
                 @Override
@@ -472,6 +516,19 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         sendToSocket("changeName", jsonObject);
     }
 
+    public void clickApplyMaxCopiedCount(View view) {
+        try {
+            int count = Integer.parseInt(etPanelMaxCopiedCount.getText().toString());
+            if (count >= 1)
+                ListAdapterCopy.MAX_COPIED_COUNT = count;
+            else
+                etPanelMaxCopiedCount.setText(ListAdapterCopy.MAX_COPIED_COUNT + "");
+        }
+        catch (Exception e) {
+            etPanelMaxCopiedCount.setText(ListAdapterCopy.MAX_COPIED_COUNT + "");
+        }
+    }
+
     public static class PlaceholderFragment extends Fragment {
 
         private static final String ARG_SECTION_NUMBER = "section_number";
@@ -497,6 +554,12 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
 
                 ActivityFirst activityFirst = (ActivityFirst) getActivity();
                 activityFirst.lvMainUsers = rootView.findViewById(R.id.lvMainUsers);
+                activityFirst.lvMainUsers.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        return false;
+                    }
+                });
 
                 activityFirst.lvMainUsers.setAdapter(activityFirst.adapterUsers);
 
@@ -505,10 +568,16 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                 activityFirst.btnMainConnect = rootView.findViewById(R.id.btnMainConnect);
                 activityFirst.etMainArea = rootView.findViewById(R.id.etMainArea);
                 activityFirst.llMainHolder = rootView.findViewById(R.id.llMainHolder);
+                activityFirst.llMainHolder.setVisibility(View.INVISIBLE);
 
 
             } else {
                 rootView = inflater.inflate(R.layout.fragment_allcopied, container, false);
+                ActivityFirst activityFirst = (ActivityFirst) getActivity();
+                activityFirst.lvAllCopiedCopy = rootView.findViewById(R.id.lvAllCopiedCopy);
+                activityFirst.lvAllCopiedCopy.setAdapter(activityFirst.adapterCopy);
+                activityFirst.lvAllCopiedCopy.setOnItemLongClickListener(activityFirst.adapterCopy);
+                activityFirst.lvAllCopiedCopy.setOnItemClickListener(activityFirst.adapterCopy);
             }
             return rootView;
         }

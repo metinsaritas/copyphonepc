@@ -1,19 +1,16 @@
 package com.metinsaritas.copyphone_pc;
 
 import android.content.Context;
-import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.CompoundButton;
-import android.widget.ExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by User on 11-Aug-17.
@@ -56,24 +53,29 @@ public class ListAdapterUsers extends BaseAdapter {
 
 
         final User user = getItem(i);
-        boolean activeStatus = !Room.Settings.containsKey(user.id);
+        boolean activeStatus = !RequestRoom.Settings.containsKey(user.id);
         tbUsersActive.setChecked(activeStatus);
 
         if (user.id.equals(ActivityFirst.userId)) {
             tbUsersActive.setVisibility(View.INVISIBLE);
-            tvLvUserName.setTextColor(context.getResources().getColor(R.color.colorAccent));
+            tvLvUserName.setTextColor(context.getResources().getColor(R.color.colorPrimaryDark));
         }
 
         tbUsersActive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if (!b) {/*off*/
-                    Room.Settings.put(user.id,false);
+                    RequestRoom.Settings.put(user.id,false);
                 } else {/*on*/
-                    Room.Settings.remove(user.id);
+                    RequestRoom.Settings.remove(user.id);
                 }
             }
         });
+
+        if (user.admin) {
+            tvLvUserName.setTextColor(context.getResources().getColor(R.color.colorAccent));
+        }
+
         tvLvUserName.setText(user.Name);
 
         int ua_icon = R.drawable.ua_other;

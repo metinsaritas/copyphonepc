@@ -7,7 +7,7 @@ import java.util.HashMap;
  * Created by User on 14-Aug-17.
  */
 
-public class Room {
+public class RequestRoom {
     private ArrayList<String> namelist;
     public ArrayList<User> users;
 

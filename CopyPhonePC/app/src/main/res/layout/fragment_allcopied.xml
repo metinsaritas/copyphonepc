@@ -7,8 +7,8 @@
     tools:context="com.metinsaritas.copyphone_pc.ActivityFirst$PlaceholderFragment">
 
     <ListView
+        android:id="@+id/lvAllCopiedCopy"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:entries="@array/listeyazilar"></ListView>
+        android:layout_height="match_parent"></ListView>
 
 </android.support.constraint.ConstraintLayout>

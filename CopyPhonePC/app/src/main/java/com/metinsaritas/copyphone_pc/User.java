@@ -10,6 +10,8 @@ class User {
     public String id;
 
     public String Name = "User";
+    public boolean admin;
+
     public User () {
 
     }

@@ -58,15 +58,29 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/etPanelMaxCopiedCount"
+        android:text="20"
+        android:fontFamily="@font/open_sans_light"
+        android:hint="Max copied list size"
+        android:textSize="17sp"
+        android:maxLength="5"
+        android:singleLine="true"
+        android:inputType="number"
+        android:layout_below="@+id/etPanelUserName"
+        android:layout_toStartOf="@+id/btnPanelMaxCopiedCount" />
+
+    <EditText
         android:id="@+id/etPanelUserName"
-        android:text="User"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:fontFamily="@font/open_sans_light"
         android:hint="Name to be displayed"
-        android:textSize="17sp"
-        android:layout_alignBottom="@+id/button"
         android:maxLength="20"
         android:singleLine="true"
-        android:layout_toStartOf="@+id/tbPanelSetRemote" />
+        android:text="User"
+        android:textSize="17sp"
+        android:layout_alignBottom="@+id/btnPanelMaxCopiedCount"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:layout_width="80dp"
@@ -74,9 +88,21 @@
         android:textAllCaps="false"
         android:text="Apply"
         android:fontFamily="@font/open_sans_light"
-        android:onClick="clickApplyUserName"
-        android:layout_below="@+id/tbPanelSetRemote"
+        android:id="@+id/btnPanelChangeName"
+        android:onClick="clickApplyMaxCopiedCount"
+        android:layout_below="@+id/etPanelUserName"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:id="@+id/btnPanelMaxCopiedCount"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:id="@+id/button" />
+        android:layout_below="@+id/tbPanelSetRemote"
+        android:fontFamily="@font/open_sans_light"
+        android:onClick="clickApplyUserName"
+        android:text="Apply"
+        android:textAllCaps="false" />
+
 
 </RelativeLayout>

@@ -75,6 +75,9 @@ function logoutRoom (socket) {
 				delete rooms[socket.infos.roomName];
 			} else {
 				delete rooms[socket.infos.roomName].users[socket.infos.userId];
+				var nextAdmin = Object.keys(rooms[socket.infos.roomName].users);
+				rooms[socket.infos.roomName].users[nextAdmin].admin = true;
+				//rooms[socket.infos.roomName].users[nextAdmin].socket.infos = true;//hata verdi bi araf
 			}
 			
 			roomUpdate(socket.infos.room.users);
@@ -83,6 +86,7 @@ function logoutRoom (socket) {
 	
 	socket.infos.roomName = null;
 	socket.infos.room = null;
+	//socket.infos.admin = false;
 	
 }
 
@@ -96,7 +100,10 @@ io.on('connection', function(socket){
   socket.on("dataCopied", function(data){
 	  if (dataError(data,socket)) return;
 	  
-	  //bura hatli gibi
+	  console.log("Bir veri kopyalanadi");
+	  console.log(data);
+	  
+	  //bura hatli gibi-cozdum sanirim
 	  if ((socket.infos.roomName in rooms)) {
 	  
 		  var userOnRoom = Object.keys(rooms[socket.infos.roomName].users);
@@ -105,6 +112,9 @@ io.on('connection', function(socket){
 				  return;
 			  var roomSocket = rooms[socket.infos.roomName].users[val].socket;
 			  data.sender = socket.infos.userId;
+				
+			  if (index == 0)
+				  console.log(data);
 			  roomSocket.emit("otherCopied", data);
 		  });
 	  }
@@ -114,7 +124,7 @@ io.on('connection', function(socket){
 	  if (dataError(data,socket)) return;
 	  if (jsonError(data, connectRoomKeys, socket)) return;
 	  var roomName = data.roomName;
-	  
+	  var admin = false;
 	  if (socket.infos.roomName) {
 		  logoutRoom(socket);
 	  }
@@ -122,24 +132,29 @@ io.on('connection', function(socket){
 	  if (!data.hasRoom) {
 		  if (!rooms.hasOwnProperty(roomName)) {
 			  roomName = createRoom();
+			  admin = true;
+			  console.log("Different room created");
 			  rooms[roomName] = {users:{}};
 		  }
 	  } else {
 		  if (!rooms.hasOwnProperty(roomName)) {
+			  admin = true;
+			  console.log("Old room created");
 			  rooms[roomName] = {users:{}};
 		  }
 	  }
 	  
 	  
 	  var time = (new Date()).toGMTString();
-	  rooms[roomName].users[userId] = {"from":data.from,"time":time,"socket":socket,"name":data.name};
+	  rooms[roomName].users[userId] = {"admin":admin,"from":data.from,"time":time,"socket":socket,"name":data.name};
 	  
 	  socket.infos.room = rooms[roomName];
 	  socket.infos.roomName = roomName;
 	  socket.infos.name = data.name;
+	  socket.infos.admin = admin;
 	  
 	  var result = {"from":"server","roomName":roomName,"query":data,"user":null};
-	  result.user = {"from":data.from,"time":time,"name":data.name,"userId":userId};
+	  result.user = {"admin":admin,"from":data.from,"time":time,"name":data.name,"userId":userId};
 	  socket.emit("connectRoom", result);
 	  roomUpdate(socket.infos.room.users);
 	  
@@ -170,13 +185,12 @@ http.listen(port, function(){
 });
 
 function roomUpdate (roomUsers) {
-	console.log("Room updating");
 	var withoutSocket = {"namelist":[],"users":[]};
 	
 	var users = Object.keys(roomUsers);
 	users.forEach(function(val,index){
 		var data = roomUsers[val];
-		withoutSocket.users.push({"id":val,"from":data.from,"time":data.time,"Name":data.name});
+		withoutSocket.users.push({"admin":data.admin,"id":val,"from":data.from,"time":data.time,"Name":data.name});
 		withoutSocket.namelist.push(val);
 	});
 	

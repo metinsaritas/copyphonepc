@@ -1,5 +1,7 @@
-﻿//var socket = io("http://calisma.herokuapp.com/");
-var socket = io("http://localhost:3000");
+﻿var socket = io("http://calisma.herokuapp.com/");
+//var socket = io("http://localhost:3000");
+
+var receiveText = "";
 
 function copy(str) {
     var sandbox = $('#sandbox').val(str).select();
@@ -32,7 +34,8 @@ function changeVar(variable,val) {
 }
 
 function pasteLoop() {
-	changeVar("copiedText", paste());
+	var data = paste();
+	changeVar("copiedText", data);
 }
 
 var otherCopying = false;
@@ -42,6 +45,8 @@ var interval;
 app.controller("myCtrl", function($scope, $interval){
 	$scope.copiedText = paste();
 	$scope.$watch("copiedText", function(n,o) {
+		if (receiveText == n) return;
+		
 		if (otherCopying) {
 			otherCopying = false;
 			return;
@@ -51,7 +56,7 @@ app.controller("myCtrl", function($scope, $interval){
 		if (socket.connected) {
 			var copiedText = n;
 			if (copiedText.length > 0) {
-				socket.emit("dataCopied", {"from":"chrome","copiedText":copiedText});
+				socket.emit("dataCopied", {"from":"chrome","a":"b","copiedText":copiedText});
 			}
 		}
 	});
@@ -66,6 +71,7 @@ socket.on("otherCopied", function(data){
 	if (!("copiedText" in data)) return;
 	var copiedText = data.copiedText;
 	otherCopying = true;
+	receiveText = copiedText;
 	copy(copiedText);
 	changeVar("copiedText", copiedText);
 });
