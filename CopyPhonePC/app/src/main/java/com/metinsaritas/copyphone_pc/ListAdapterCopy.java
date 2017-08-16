@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,6 +70,8 @@ public class ListAdapterCopy extends BaseAdapter implements AdapterView.OnItemLo
             tvAllCopiedText.setPaintFlags(tvAllCopiedText.getPaintFlags() |   Paint.UNDERLINE_TEXT_FLAG);
             tvAllCopiedText.setTextColor(context.getResources().getColor(R.color.validate_color));
         }
+
+
         return row;
     }
 

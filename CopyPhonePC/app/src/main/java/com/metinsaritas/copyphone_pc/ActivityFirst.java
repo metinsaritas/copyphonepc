@@ -382,6 +382,7 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
 
         Copy copy = new Copy();
         copy.copiedText = copiedText;
+        MyValidator.Validate(copy);
         copyList.add(0,copy);
         adapterCopy.notifyDataSetChanged();
 
