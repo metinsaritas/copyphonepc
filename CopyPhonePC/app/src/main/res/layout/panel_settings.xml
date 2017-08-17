@@ -1,108 +1,168 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp">
 
 
 
-
-    <TextView
-        android:id="@+id/tvPanelGetRemote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/tbPanelGetRemote"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_toStartOf="@+id/tbPanelGetRemote"
-        android:gravity="center|left"
-        android:text="Get remote copied"
-        android:fontFamily="@font/open_sans_light"
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/tvPanelSetRemote"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/tbPanelSetRemote"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvPanelGetRemote"
-        android:layout_toStartOf="@+id/tbPanelGetRemote"
-        android:gravity="center|left"
-        android:text="Set remote copied"
-        android:fontFamily="@font/open_sans_light"
-        android:textSize="18sp" />
-
-    <ToggleButton
-        android:id="@+id/tbPanelGetRemote"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:textAllCaps="false"
-        android:fontFamily="@font/open_sans_light"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"/>
-
-
-    <ToggleButton
-        android:id="@+id/tbPanelSetRemote"
-        android:layout_width="80dp"
-        android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:fontFamily="@font/open_sans_light"
-        android:checked="true"
-        android:layout_below="@+id/tbPanelGetRemote"
-        android:layout_alignParentEnd="true" />
-
-
-    <EditText
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/etPanelMaxCopiedCount"
-        android:text="20"
-        android:fontFamily="@font/open_sans_light"
-        android:hint="Max copied list size"
-        android:textSize="17sp"
-        android:maxLength="5"
-        android:singleLine="true"
-        android:inputType="number"
-        android:layout_below="@+id/etPanelUserName"
-        android:layout_toStartOf="@+id/btnPanelMaxCopiedCount" />
+        android:weightSum="100"
+        android:orientation="horizontal">
 
-    <EditText
-        android:id="@+id/etPanelUserName"
+        <TextView
+            android:id="@+id/tvPanelGetRemote"
+            android:layout_width="0dp"
+            android:layout_weight="100"
+            android:layout_height="wrap_content"
+            android:text="Get remote copied"
+            android:fontFamily="@font/open_sans_light"
+            android:textSize="18sp" />
+
+        <ToggleButton
+            android:id="@+id/tbPanelGetRemote"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:textAllCaps="false"
+            android:fontFamily="@font/open_sans_light"
+            />
+
+    </LinearLayout>
+
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/open_sans_light"
-        android:hint="Name to be displayed"
-        android:maxLength="20"
-        android:singleLine="true"
-        android:text="User"
-        android:textSize="17sp"
-        android:layout_alignBottom="@+id/btnPanelMaxCopiedCount"
-        android:layout_alignParentStart="true" />
+        android:weightSum="100"
+        android:orientation="horizontal">
 
-    <Button
-        android:layout_width="80dp"
+        <TextView
+            android:id="@+id/tvPanelSetRemote"
+            android:layout_width="0dp"
+            android:layout_weight="100"
+            android:layout_height="wrap_content"
+            android:gravity="center|left"
+            android:text="Set remote copied"
+            android:fontFamily="@font/open_sans_light"
+            android:textSize="18sp" />
+
+
+
+
+        <ToggleButton
+            android:id="@+id/tbPanelSetRemote"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:fontFamily="@font/open_sans_light"
+            android:checked="true"
+            android:layout_alignParentEnd="true" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:text="Apply"
-        android:fontFamily="@font/open_sans_light"
-        android:id="@+id/btnPanelChangeName"
-        android:onClick="clickApplyMaxCopiedCount"
-        android:layout_below="@+id/etPanelUserName"
-        android:layout_alignParentEnd="true" />
+        android:orientation="horizontal"
+        android:weightSum="100">
 
-    <Button
-        android:id="@+id/btnPanelMaxCopiedCount"
-        android:layout_width="80dp"
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:gravity="center|start"
+            android:fontFamily="@font/open_sans_light"
+            android:textSize="18sp"
+            android:text="Nick"/>
+
+        <EditText
+            android:id="@+id/etPanelUserName"
+            android:layout_width="0dp"
+            android:layout_weight="100"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/open_sans_light"
+            android:hint="Name to be displayed"
+            android:maxLength="20"
+            android:singleLine="true"
+            android:text="User"
+            android:textSize="17sp"
+            android:layout_alignBottom="@+id/btnPanelMaxCopiedCount"
+            android:layout_alignParentStart="true" />
+
+        <Button
+            android:id="@+id/btnPanelMaxCopiedCount"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@+id/tbPanelSetRemote"
+            android:fontFamily="@font/open_sans_light"
+            android:onClick="clickApplyUserName"
+            android:text="Apply"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/tbPanelSetRemote"
-        android:fontFamily="@font/open_sans_light"
-        android:onClick="clickApplyUserName"
-        android:text="Apply"
-        android:textAllCaps="false" />
+        android:weightSum="100"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:gravity="center|start"
+            android:fontFamily="@font/open_sans_light"
+            android:textSize="18sp"
+            android:text="List size"/>
+
+        <EditText
+            android:layout_width="0dp"
+            android:layout_weight="100"
+            android:layout_height="wrap_content"
+            android:id="@+id/etPanelMaxCopiedCount"
+            android:text="20"
+            android:fontFamily="@font/open_sans_light"
+            android:hint="Max copied list size"
+            android:textSize="17sp"
+            android:maxLength="5"
+            android:singleLine="true"
+            android:inputType="number" />
 
 
-</RelativeLayout>
+
+        <Button
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Apply"
+            android:fontFamily="@font/open_sans_light"
+            android:id="@+id/btnPanelChangeName"
+            android:onClick="clickApplyMaxCopiedCount"
+            android:layout_alignParentEnd="true" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mail"
+            android:fontFamily="@font/open_sans_light"
+            android:onClick="clickToMail"
+            android:layout_alignParentBottom="true"
+            android:background="@null"
+            android:textAllCaps="false"
+            android:textColor="#333"
+            android:layout_alignParentStart="true" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

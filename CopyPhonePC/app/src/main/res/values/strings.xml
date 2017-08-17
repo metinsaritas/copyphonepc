@@ -1,14 +1,14 @@
 <resources>
-    <string name="app_name">Copy Phone-PC</string>
+    <string name="app_name">Copy Team</string>
     <string name="title_activity_first">ActivityFirst</string>
     <string name="action_settings">Settings</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="tab_text_1">Main</string>
     <string name="tab_text_2">Last Copied</string>
-    <string name="title_activity_sildrawer">sildrawer</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="mail">metinsaritas2@gmail.com</string>
 
     <string-array name="context_menu_all_copied">
         <item>Remove</item>

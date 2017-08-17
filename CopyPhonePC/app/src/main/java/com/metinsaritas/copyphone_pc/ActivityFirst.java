@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -39,6 +40,10 @@ import android.widget.ToggleButton;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -92,11 +97,23 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
     private ArrayList<Copy> copyList = new ArrayList<Copy>();
 
     private EditText etPanelMaxCopiedCount;
-
+    private AdView mAdView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first);
+        //MobileAds.initialize(this, "ca-app-pub-1030319386229981~7272245084");
+        /*
+        * ca-app-pub-1030319386229981~7272245084
+        * ca-app-pub-1030319386229981/6073879332
+        * */
+
+        mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder()
+                //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        mAdView.loadAd(adRequest);
+
 
         startService(new Intent(ActivityFirst.this, ServiceRemoveNotification.class));
 
@@ -527,6 +544,8 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
     }
 
     public void clickApplyMaxCopiedCount(View view) {
+        int i = 5;
+        i++;
         try {
             int count = Integer.parseInt(etPanelMaxCopiedCount.getText().toString());
             if (count >= 1)
@@ -536,6 +555,24 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         }
         catch (Exception e) {
             etPanelMaxCopiedCount.setText(ListAdapterCopy.MAX_COPIED_COUNT + "");
+        }
+    }
+
+    public void clickToMail(View view) {
+        // yapımcıya mail gönderme intentini araştır
+        try {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("message/rfc822");
+            i.putExtra(Intent.EXTRA_EMAIL  , new String[]{getResources().getString(R.string.mail)});
+            i.putExtra(Intent.EXTRA_TEXT   , "");
+            try {
+                startActivity(Intent.createChooser(i, "Send mail..."));
+            } catch (android.content.ActivityNotFoundException ex) {
+                Toast.makeText(ActivityFirst.this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+            }
+        }
+        catch (Exception e) {
+
         }
     }
 
