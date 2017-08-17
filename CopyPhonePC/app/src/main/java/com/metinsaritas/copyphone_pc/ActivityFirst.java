@@ -2,6 +2,7 @@ package com.metinsaritas.copyphone_pc;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -96,6 +97,8 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first);
+
+        startService(new Intent(ActivityFirst.this, ServiceRemoveNotification.class));
 
         initalizeComponent();
         initalizeSocket();
@@ -347,7 +350,12 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
                             copy.copiedText = copiedText;
                             MyValidator.Validate(copy);
                             copyList.add(0,copy);
-                            adapterCopy.notifyDataSetChanged();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    adapterCopy.notifyDataSetChanged();
+                                }
+                            });
                             //listeye ekle listviewi güncelle
 
                             if (tbPanelGetRemote.isChecked()) {
@@ -384,7 +392,12 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         copy.copiedText = copiedText;
         MyValidator.Validate(copy);
         copyList.add(0,copy);
-        adapterCopy.notifyDataSetChanged();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                adapterCopy.notifyDataSetChanged();
+            }
+        });
 
 
         JSONObject json = new JSONObject();
@@ -413,12 +426,6 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
         if (socket == null || json == null || !socket.connected()) return false;
         socket.emit(event, json);
         return true;
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        myNotification.cancel();
     }
 
     @Override
@@ -496,7 +503,9 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
 
     public void clickCopy(View view) {
         if (etMainArea == null) return;
+
         clipboardManager.setPrimaryClip(ClipData.newPlainText("text", etMainArea.getText().toString()));
+        etMainArea.setText("");
     }
 
     public void clickPaste(View view) {

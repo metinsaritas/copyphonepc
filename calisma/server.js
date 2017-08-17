@@ -4,7 +4,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 var port = process.env.PORT || 3000;
-
+const MIN_DIGIT_LENGTH = 6;
 app.use(express.static("public"));
 
 app.get('/', function(req, res){
@@ -49,8 +49,8 @@ function jsonError(data, filterArray, socket) {
 
 function createRoom () {
 	var testNumber = 0;
-	var digitLength = 4;
-	var digit = "0000";
+	var digitLength = MIN_DIGIT_LENGTH;
+	var digit = "000000";
 	do {
 		if (testNumber == Math.pow(digitChars.length, digitLength) - 10/*garanted*/) digitLength++;
 		digit = giveDigit(digitLength);
@@ -112,9 +112,7 @@ io.on('connection', function(socket){
 				  return;
 			  var roomSocket = rooms[socket.infos.roomName].users[val].socket;
 			  data.sender = socket.infos.userId;
-				
-			  if (index == 0)
-				  console.log(data);
+			  
 			  roomSocket.emit("otherCopied", data);
 		  });
 	  }
