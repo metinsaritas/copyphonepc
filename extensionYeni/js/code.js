@@ -1,7 +1,15 @@
-﻿var socket = io("http://calisma.herokuapp.com/");
-//var socket = io("http://localhost:3000");
-
+﻿var socket = null;
 var receiveText = "";
+var port = null;
+var screen = {callback:"cbScreen"};
+initalizeSocket();
+
+var sendResponse = function(data) {
+	if (!port) return;
+	if (!data) return;
+
+	port.postMessage(data);
+};
 
 function copy(str) {
     var sandbox = $('#sandbox').val(str).select();
@@ -56,7 +64,10 @@ app.controller("myCtrl", function($scope, $interval){
 		if (socket.connected) {
 			var copiedText = n;
 			if (copiedText.length > 0) {
-				socket.emit("dataCopied", {"from":"chrome","a":"b","copiedText":copiedText});
+				var dataCopied = {"from":"chrome","copiedText":copiedText};
+				socket.emit("dataCopied", dataCopied);
+				var response = {callback: "cbDataCopied", data: dataCopied};
+				sendResponse(response);
 			}
 		}
 	});
@@ -65,13 +76,63 @@ app.controller("myCtrl", function($scope, $interval){
 });
 
 
-socket.on("otherCopied", function(data){
-	//console.log(data);//bbbaasad
-	if (typeof data != "object") return;
-	if (!("copiedText" in data)) return;
-	var copiedText = data.copiedText;
-	otherCopying = true;
-	receiveText = copiedText;
-	copy(copiedText);
-	changeVar("copiedText", copiedText);
+function initalizeSocket () {
+	socket = io("http://calisma.herokuapp.com/");
+	//socket = io("http://localhost:3000/");
+
+	socket.on("otherCopied", function(data){
+		if (typeof data != "object") return;
+		if (!("copiedText" in data)) return;
+		var copiedText = data.copiedText;
+		otherCopying = true;
+		receiveText = copiedText;
+		copy(copiedText);
+		changeVar("copiedText", copiedText);
+	});
+
+	socket.on("connect", function() {
+
+	});
+
+	socket.on("connectRoom", function(data) {
+		data.callback = "cbConnectRoom";
+		screen.roomStatus = 2;
+		sendResponse(data);
+	});
+
+	socket.on("roomUpdated", function(data) {
+		data.callback = "cbRoomUpdated";
+		screen.room = data;
+		sendResponse(data);
+	});
+
+	socket.on("disconnect", function(){
+		screen.roomStatus = 0;
+	});
+
+};
+
+chrome.runtime.onConnect.addListener(function(p) {
+	port = p;
+	p.onMessage.addListener(function(request){
+		if (!("type" in request)) return;
+
+		if (eval("typeof "+request.type+" == 'function'")) {
+			var params = request.data ? JSON.stringify(request.data):"";
+			eval(request.type+"("+params+");");
+		}
+	});
+
+	p.postMessage(screen);
+	
 });
+
+function connectRoom (data) {
+	socket.emit("connectRoom", {"from":data.from,"roomName":data.roomName,"hasRoom":data.hasRoom,"name":data.name});
+}
+
+function disconnectRoom () {
+	socket.emit("disconnectRoom");
+	screen.roomStatus = 0;
+}
+ 

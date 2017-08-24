@@ -97,22 +97,18 @@ public class ActivityFirst extends AppCompatActivity implements NavigationView.O
     private ArrayList<Copy> copyList = new ArrayList<Copy>();
 
     private EditText etPanelMaxCopiedCount;
-    private AdView mAdView;
+    private AdView adView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first);
-        //MobileAds.initialize(this, "ca-app-pub-1030319386229981~7272245084");
-        /*
-        * ca-app-pub-1030319386229981~7272245084
-        * ca-app-pub-1030319386229981/6073879332
-        * */
 
-        mAdView = (AdView) findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder()
-                //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .build();
-        mAdView.loadAd(adRequest);
+        MobileAds.initialize(getApplicationContext(),
+                "ca-app-pub-1030319386229981~3757619445");
+
+        adView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
 
 
         startService(new Intent(ActivityFirst.this, ServiceRemoveNotification.class));

@@ -1,1 +1,237 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&subset=latin-ext');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300&subset=latin-ext');
 html,body {margin:0;padding:0;background:white;width:350px;height:550px;}
+#bodyHolder {margin:0;padding:0;background-color:white;
+font-family: "Open Sans", sans-serif;
+background: #eeeeee;
+color: #333;
+}
+#header {background-color:#2d3e50;height:100px;}
+
+#header .appBar {padding: 10px;}
+
+#header .appBar .appName {color:#8a97a7;font-size:20px;width:270px;height:24px;
+float:left;
+font-family: 'Open Sans', sans-serif;}
+
+#header .appBar .button {
+    background-image:url(../imgs/settings.png);
+    width:24px;
+    height:24px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    float:right;
+    cursor: pointer;
+}
+
+clear, .clear {clear:both;}
+
+.tabHolder {
+    width:auto;
+    height:40px;
+    margin-top:26px;
+}
+
+.tabHolder .tab {
+    width:calc(100% / 2);
+    height:40px;
+    line-height: 40px;
+    text-align: center;
+    color:#505d6d;
+    font-size: 15px;
+    font-family: tahoma, sans-serif;;
+    background:none;
+    float:left;
+    cursor: pointer;
+    box-sizing:border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+.tabHolder .tab.selected {
+    color:#eaf1e9;
+    cursor: default;
+    border-bottom:2px solid orange;
+}
+
+.panel {
+    display: none;
+    width:100%;
+    height:100%;
+    background-color:rgba(0, 0, 0, 0.45);
+    position: fixed;
+    top:0;
+    left:0;
+}
+
+.panel .close {
+    width:20%;
+    height: 100%;
+    background-color:none;
+    cursor: pointer;
+    position: absolute;
+    top:0;
+    left:0;
+}
+
+.panel .content {
+    width:80%;
+    height:100%;
+    position: absolute;
+    left:100%;
+    top:0;
+    background-color:#fafafa;
+}
+
+#header .contentHolder {
+    background-color: white;
+    height: 450px;
+    width:100%;
+}
+
+#header .contentHolder .page {
+    width:350px;
+    height:450px;
+    background-color:white;
+    position: fixed;
+    top:100px;
+    left:0px;
+}
+
+.androidList {
+    padding:10px;
+    list-style-type:none;
+    padding:0;
+    margin:0;
+    color: #ccc;
+    overflow-y: scroll;
+    max-height: 450px;
+}
+
+.androidList li {
+    margin:0px;
+    border-top: 1px solid #e7e7e7;
+    white-space: nowrap;
+}
+
+.noselect {
+  -webkit-touch-callout: none;
+    -webkit-user-select: none;
+     -khtml-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+
+.androidList li a {
+    display:block;
+    padding: 10px;
+    color: #c2beee;
+    margin-right: 10px;
+    overflow: hidden;
+    font-size: 15px;
+}
+
+android-button {
+    background-color: #d7d7d9;
+    color: #505050;
+    border-radius: 3px;
+    border-bottom: 2px solid #c1bcc5;
+    padding: 6px 8px;
+    font-size: 14px;
+    font-weight: bold;
+    display: inline-block;
+    box-shadow: inset 0px 0px 2px 2px #d1d1d2;
+    cursor: pointer;
+
+    transition: translate;
+    transition-duration: 0.2s;
+    transition-property: background;
+
+    text-align: center;
+    overflow: hidden;
+}
+
+android-button:hover {
+    background-color: #c4c4c5;
+}
+
+android-textview {
+    display:inline-block;
+    text-align: center;
+    background:none;
+    border-bottom:1px solid #aaaeaf;
+    font-size:16px;
+    color: #333;
+    white-space:nowrap;
+    overflow: hidden;
+}
+
+.groupHolder .group {
+    padding:6px 8px;
+    background: #ecf0f1;
+    margin:10px;
+}
+
+.groupHolder .group span.header {
+    font-size:16px;
+    min-width:60px;
+    float:left;
+    line-height: 40px;
+}
+
+.groupHolder .text {
+    font-size:16px;
+    margin:10px 10px;
+}
+
+#hiddenClipboard {
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+}
+
+android-toast {
+    background-color: #666666;
+    color: #ececec;
+    padding: 10px;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    text-align: center;
+    font-size: 13px;
+    border-radius: 6px;
+    font-family: Verdana;
+    display: none;
+}
+
+.userList {
+    border-radius: 6px;
+    padding:0px !important;
+}
+
+.userList ul {margin:0;padding: 0;}
+
+.userList li {
+    list-style-type: none;
+    padding: 8px 6px;
+    background-image:url(../imgs/ua_edge.png);
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    background-size: 20px;
+    text-indent: 25px;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;    
+    margin-right: 10px;
+}
+.userList li.admin {
+    color: orange;
+}
+
+.disabled {
+    color:#b5b4b4 !important;
+}

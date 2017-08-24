@@ -2,6 +2,7 @@
 <android.support.v4.widget.DrawerLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -78,21 +79,20 @@
             android:orientation="vertical"
             android:weightSum="100">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="100"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        <android.support.v4.view.ViewPager
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="100"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
             <com.google.android.gms.ads.AdView
-                xmlns:ads="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/adView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                ads:adSize="SMART_BANNER"
                 android:background="#333"
-                ads:adUnitId="ca-app-pub-1030319386229981/6073879332">
+                ads:adSize="BANNER"
+                ads:adUnitId="ca-app-pub-1030319386229981/7145844890">
             </com.google.android.gms.ads.AdView>
 
 

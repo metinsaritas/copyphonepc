@@ -13,7 +13,7 @@
       "matches": [ "\u003Call_urls>" ],
       "run_at": "document_end"
    } ],*/
-   "content_security_policy": "script-src 'self' https://ssl.google-analytics.com; object-src 'self'",
+   "content_security_policy": "script-src 'self' 'unsafe-eval' https://ssl.google-analytics.com; object-src 'self'",
    "description": "Kopyalar",
    "icons": {
       "128": "imgs/copyteam_chrome_icon.png",

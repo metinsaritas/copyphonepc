@@ -1,8 +1,82 @@
 ﻿<html>
 <head>
+<meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1" />
 <link rel="stylesheet" href="css/style.css"/>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/angular.min.js"></script>
+<script type="text/javascript" src="js/popup.js"></script>
 </head>
 <body>
-Burası
+
+<textarea id="hiddenClipboard"></textarea>
+
+<div id="bodyHolder" ng-app="main" ng-controller="controller">
+    <div id="header">
+
+        <div class="headerInner noselect">
+            <div class="appBar">
+                <div class="appName">{{Settings.appName}}</div>
+                <div class="button" ng-click="showPanelSettings()"></div>
+            </div>
+
+            <div class="clear"></div>
+
+            <div class="tabHolder">
+                <div class="tab" ng-click="selectTab(1)" ng-class="selectedTab == 1 ? 'selected':''">Main</div>
+                <div class="tab" ng-click="selectTab(2)" ng-class="selectedTab == 2 ? 'selected':''">Last Copied</div>
+            
+            </div>
+        </div>
+
+        <div class="contentHolder">
+
+            <div class="page noselect" page-name="main" ng-style="selectedTab == 1 ? {left:'0px'} : {left:'-350px'}">
+                <div class="groupHolder">
+                    <div class="group">
+                        <span class="header">Room</span>
+                        <android-textview id="tvRoomName" ng-attr-contenteditable="{{roomStatus == 0}}" ng-class="roomStatus != 0 ? 'disabled':''" style="width:148px;margin-right: 5px;height:25px;">{{roomName}}</android-textview>
+                        <android-button style="min-width: 80px;" ng-click="roomOperation();" ng-class="roomStatus == 1 ? 'disabled':''">{{connectText[roomStatus]}}</android-button>
+                    </div>
+                
+                
+                    <div ng-if="roomStatus == 2">
+                        <div class="group">
+                            <span class="header">Test</span>
+                            <div style="display: inline-block;overflow: hidden"><android-textview id="tvTest" style="width:148px;margin-right: 5px; height: 25px;"></android-textview></div>
+                            <android-button style="width: 29px;" ng-click="copy('#tvTest')">C</android-button>
+                            <android-button style="width: 29px;" ng-click="paste('#tvTest')">P</android-button>
+                        </div>
+
+                        <div class="text">Members</div>
+                        <div class="userList group">
+                            <ul style="max-height: 280px; overflow-y: scroll;">
+                                <li ng-repeat="user in userList" ng-class="user.admin ? 'admin':''" ng-style="{'background-image':'url(imgs/ua_'+user.from+'.png)'}">{{user.Name}}</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="page" page-name="lastcopied" ng-style="selectedTab == 2 ? {left:'0px'} : {left:'350px'}">
+                <ul class="androidList">
+                    <li ng-repeat="copied in copiedList">
+                        <a ng-if="copied.type == 'LINK'" target="_blank" href="{{copied.textLink}}">{{copied.copiedText}}</a>
+                        <a ng-if="copied.type != 'LINK'">{{copied.copiedText}}</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    
+    </div>
+
+    <div class="panel" app-panel="settings" >
+        <div class="close" ng-click="closePanelSettings()"></div>
+        <div class="content">
+        
+        </div>
+    </div>
+</div>
 </body>
 </html>
