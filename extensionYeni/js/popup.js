@@ -78,10 +78,15 @@ function URLTester(text) {
 
 function readFromCache () {
     if (!("localStorage" in window)) return;
-    
-    var roomName    = local("roomName");    if (roomName)   getScope().roomName    = roomName;
-    var copiedList  = local("copiedList");  if (copiedList) getScope().copiedList  = JSON.parse(copiedList);
-    var nick        = local("nick");        if (nick) getScope().nick  = nick;
+    try {
+        var roomName                = local("roomName");            if (roomName)        getScope().roomName         = roomName;
+        var copiedList              = local("copiedList");          if (copiedList)      getScope().copiedList       = JSON.parse(copiedList);
+        var nick                    = local("nick");                if (nick)            getScope().nick             = nick;
+        var statusGetRemote         = local("statusGetRemote");     if (statusGetRemote) getScope().statusGetRemote  = eval(statusGetRemote);
+        var statusSetRemote         = local("statusSetRemote");     if (statusSetRemote) getScope().statusSetRemote  = eval(statusSetRemote);
+    } catch (e) {
+        localRemove();
+    }
     
     //getScope().$apply();
 }
@@ -98,8 +103,9 @@ function local(key, value) {
 }
 
 function localRemove(key) {
-    if (!key) return;
     if (!("localStorage" in window)) return;
+    if (!key) localStorage.clear();
+
     localStorage.removeItem(key);
 }
 
@@ -123,6 +129,8 @@ app.controller("controller", function($scope, $compile, $sce) {
 
     $scope.nick = "User";
     $scope.copiedLimit = 20;
+    $scope.statusGetRemote = true;
+    $scope.statusSetRemote = true;
 
     readFromCache();
 
@@ -255,6 +263,18 @@ app.controller("controller", function($scope, $compile, $sce) {
         port.postMessage(request);
     });
 
+    $scope.changeStatusGetRemote = function () {
+        var element = $("#tbGetRemote");
+        var status = element.attr("status");
+        $scope.statusGetRemote = eval(status);
+    };
+
+    $scope.changeStatusSetRemote = function () {
+        var element = $("#tbSetRemote");
+        var status = element.attr("status");
+        $scope.statusSetRemote = eval(status);
+    };
+
 }).directive("androidButton", function(){
     return {
         link: function (scope, element, attr) {
@@ -311,27 +331,36 @@ app.controller("controller", function($scope, $compile, $sce) {
 }).directive("androidTogglebutton", function () {
     return {
         restrict: "E",
-        template: function (element, attr) {
-            var html = '<div>{{text}}</div><div class="toggleButtonStatus" ng-class="checked && '+"'checked'"+'"></div>';
+        template: function (element, scope) {
+            var html = '<div>{{text}}</div><div class="toggleButtonStatus" ng-class="status && '+"'checked'"+'"></div>';
             return html;
         },
         scope: {
-            checked: "="
+            status:"@androidTogglebutton"
         },
         link: function (scope, element, attr) {
 
-            scope.checked = "checked" in attr ? attr.checked : false;
+            scope.status = "status" in attr ? attr.status : false;
             scope.texton = "texton" in attr ? attr.texton : "Active";
             scope.textoff = "textoff" in attr ? attr.textoff : "Passive";
-            scope.text = scope.checked ? scope.texton : scope.textoff;
+            scope.watcher = "watcher" in attr ? attr.watcher : null;
+            scope.text = scope.status ? scope.texton : scope.textoff;
             
             element.on("click", function(event) {
-                scope.checked = !scope.checked;
+                scope.status = !scope.status;
                 scope.$apply();
             });
 
-            scope.$watch("checked", function(n,o) {
-                  scope.text = scope.checked ? scope.texton : scope.textoff;
+            scope.$watch("status", function(n,o) {
+                  scope.text = n ? scope.texton : scope.textoff;
+                  if (scope.watcher && scope.watcher in scope.$parent) {
+                      scope.$parent[scope.watcher] = eval(n);
+                    }
+            });
+
+            scope.$parent.$watch(scope.watcher, function(n,o) {
+                scope.text = attr.status == "true" ? scope.texton : scope.textoff;
+                local(scope.watcher, n);
             });
         }
     }
@@ -357,7 +386,6 @@ function cbDisconnectRoom() {
 }
 
 function cbRoomUpdated (data) {
-    console.log("çağrıldım");
     console.log(data);
     getScope().userList = data.users;
     getScope().$apply();

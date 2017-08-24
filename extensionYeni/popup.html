@@ -75,8 +75,8 @@
         <div class="close" ng-click="closePanelSettings()"></div>
         <div class="content">
             <div class="itemHolder noselect">
-                <div class="item"><span class="title">Get remote copied</span><android-togglebutton style="float:right;min-width: 37px;" checked="true" texton="On" textoff="Off"></android-togglebutton></div>
-                <div class="item"><span class="title">Set remote copied</span><android-togglebutton style="float:right;min-width: 37px;" checked="true" texton="On" textoff="Off"></android-togglebutton></div>
+                <div class="item"><span class="title">Get remote copied</span><android-togglebutton id="tbGetRemote" watcher="statusGetRemote" status="{{statusGetRemote}}" style="float:right;min-width: 37px;"  texton="On" textoff="Off"></android-togglebutton></div>
+                <div class="item"><span class="title">Set remote copied</span><android-togglebutton id="tbSetRemote" watcher="statusSetRemote" status="{{statusSetRemote}}" style="float:right;min-width: 37px;"  texton="On" textoff="Off"></android-togglebutton></div>
                 <div class="item"><span class="title">Nick</span><android-textview style="margin-top: 5px; width:120px;" id="tvNick">{{nick}}</android-textview> <android-button style="font-weight: normal" ng-click="applyChangeName()">Apply</android-button></div>
                 <div class="item"><span class="title">List size</span><android-textview style="margin-top: 5px; width:120px;" id="tvCopiedLimit">{{copiedLimit}}</android-textview> <android-button style="font-weight: normal" ng-click="applyChangeCopiedLimit();">Apply</android-button></div>
                 <div class="item"><android-button style="display: block; float:unset;" ng-click="clearList();">Clear list</android-button></div>
