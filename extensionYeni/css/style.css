@@ -10,9 +10,14 @@ color: #333;
 
 #header .appBar {padding: 10px;}
 
-#header .appBar .appName {color:#8a97a7;font-size:20px;width:270px;height:24px;
-float:left;
-font-family: 'Open Sans', sans-serif;}
+#header .appBar .appName {
+    color: #eaf1e9;
+    font-size: 16px;
+    width: 270px;
+    height: 24px;
+    float: left;
+    font-family: 'Open Sans', sans-serif;
+}
 
 #header .appBar .button {
     background-image:url(../imgs/settings.png);
@@ -104,7 +109,7 @@ clear, .clear {clear:both;}
     padding:0;
     margin:0;
     color: #ccc;
-    overflow-y: scroll;
+    overflow-y: auto;
     max-height: 450px;
 }
 
@@ -206,6 +211,7 @@ android-toast {
     border-radius: 6px;
     font-family: Verdana;
     display: none;
+    margin-left: -22.242px;
 }
 
 .userList {
@@ -226,12 +232,57 @@ android-toast {
     font-size: 15px;
     white-space: nowrap;
     overflow: hidden;    
-    margin-right: 10px;
+    border-top: 1px solid #ccc;
 }
+
+.userList li:first-child {
+    border-top: none;
+}
+
 .userList li.admin {
     color: orange;
 }
 
 .disabled {
     color:#b5b4b4 !important;
+}
+
+::-webkit-scrollbar-track
+{
+	background: transparent;
+}
+
+::-webkit-scrollbar
+{
+	width: 6px;
+	background-color: #F5F5F5;
+}
+
+::-webkit-scrollbar-thumb
+{
+	border-radius: 6px;
+	background-color: rgba(45, 62, 80, 0.45); 
+}
+
+.panel .content .itemHolder {
+    margin:10px;
+}
+
+.panel .content .itemHolder .item {
+    clear:both;
+}
+
+.panel .content .itemHolder .item .title {
+    font-size: 14px;
+    height: 36px;
+    line-height: 36px;
+    float: left;
+    min-width: 170px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.panel .content .itemHolder .item android-button {
+    float:right;
+    position: relative;
 }

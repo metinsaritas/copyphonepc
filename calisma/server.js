@@ -76,8 +76,10 @@ function logoutRoom (socket) {
 			} else {
 				delete rooms[socket.infos.roomName].users[socket.infos.userId];
 				var nextAdmin = Object.keys(rooms[socket.infos.roomName].users);
-				rooms[socket.infos.roomName].users[nextAdmin].admin = true;
-				//rooms[socket.infos.roomName].users[nextAdmin].socket.infos = true;//hata verdi bi araf
+				try {
+				rooms[socket.infos.roomName].users[nextAdmin].admin = true;//hata verdi bi ara
+				//rooms[socket.infos.roomName].users[nextAdmin].socket.infos = true;//hata verdi bi ara
+				} catch (e) {console.log("HATA:");console.log(e);}
 			}
 			
 			roomUpdate(socket.infos.room.users);

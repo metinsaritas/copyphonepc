@@ -5,6 +5,23 @@ var port = chrome.extension.connect({
       name: "iletisim"
  });
 
+const Status = new function () {
+    this.CONNECT = 0;
+    this.CONNECTING = 1;
+    this.DISCONNECT = 2;
+};
+
+const Toast = new function () {
+    this.makeText = function (text, time, compile, scope) {
+        text = text.split("<").join("&lt;");
+        
+        $("body").append(compile('<android-toast duration="'+time+'" text="'+text+'"/>"')(scope));
+    }
+
+    this.LENGTH_SHORT = 500;
+    this.LENGTH_LONG = 800;
+};
+
 $(function() {
     panelSettings = $("[app-panel=settings]");
     pages = $("#header .contentHolder .page");
@@ -25,12 +42,15 @@ $(function() {
 
     $(document).on("paste", function(e){ 
         if($(e.target).is("#tvRoomName")) {
-
+            //TODO: bura copy elemen ile cagir paste element ile cagir falan paste sonsuz dongu olabilir dikkat
         }
     });
 
     
 });
+
+
+
 
 function getAngular(query) {
     return angular.element(query ? query : "#bodyHolder");
@@ -52,16 +72,7 @@ function URLTester(text) {
         return {result:true, text:text};
 }
 
-const Toast = new function () {
-    this.makeText = function (text, time, compile, scope) {
-        text = text.split("<").join("&lt;");
-        
-        $("body").append(compile('<android-toast duration="'+time+'" text="'+text+'"/>"')(scope));
-    }
 
-    this.LENGTH_SHORT = 500;
-    this.LENGTH_LONG = 800;
-};
 
 
 
@@ -98,43 +109,12 @@ app.controller("controller", function($scope, $compile, $sce) {
     $scope.Settings = {appName:"Copy Team", colorPrimary: "#2d3e50", colorSecond: "#ffa500", copiedLimit:65};
     $scope.statusPanelSettings = false;
     $scope.selectedTab = Number(local("selectedTab") || 1);
-    $scope.copiedList = [{copiedText:"Selam"},{copiedText:"google.com",textLink:"http://google.com",type:"LINK"},{copiedText:"0535 022 83 09"}];
-    $scope.userList = [{Name:"Metin Phone",from:"android",admin:false},{Name:"Metin PC",from:"ios",admin:true},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin Dektop",from:"chrome",admin:false},
-        {Name:"Metin2 Dektop",from:"chrome",admin:false},
-        ];
+    $scope.copiedList = [];
+    $scope.userList = [];
 
     $scope.roomName = "";
 
-    $scope.roomStatus = 0;
+    $scope.roomStatus = Status.CONNECT;
     $scope.connectText = ["Connect","Connecting","Disconnect"];
     $scope.selectTab = function (val) {
         $scope.selectedTab = val;
@@ -154,8 +134,8 @@ app.controller("controller", function($scope, $compile, $sce) {
             return i != index;
         });
         
-        $scope.copiedList.unshift(copiedObject);
-        $scope.$apply();
+        //$scope.copiedList.unshift(copiedObject);
+        //$scope.$apply();
         return false;
     });
 
@@ -177,6 +157,9 @@ app.controller("controller", function($scope, $compile, $sce) {
     $scope.showPanelSettings = function () {
         $scope.statusPanelSettings = true;
     };
+
+    
+    //$scope.showPanelSettings(); // TODO: delete this line
 
     $scope.closePanelSettings = function () {
         $scope.statusPanelSettings = false;
@@ -220,9 +203,9 @@ app.controller("controller", function($scope, $compile, $sce) {
     };
 
     $scope.roomOperation = function () {
-        if ($scope.roomStatus == 0) {
+        if ($scope.roomStatus == Status.CONNECT) {
             $scope.connectRoom();
-        } else if ($scope.roomStatus == 2) {
+        } else if ($scope.roomStatus == Status.DISCONNECT) {
             $scope.disconnectRoom();
         }
     };
@@ -230,7 +213,7 @@ app.controller("controller", function($scope, $compile, $sce) {
     $scope.connectRoom = function () {
         $scope.roomName = angular.element("#tvRoomName").text();
         var request = {type:"connectRoom",data:{"from":"chrome","roomName":$scope.roomName,"hasRoom":false,"name":"User Chrome"}};
-        $scope.roomStatus = 1;
+        $scope.roomStatus = Status.CONNECTING;
         port.postMessage(request);
     };
 
@@ -238,6 +221,11 @@ app.controller("controller", function($scope, $compile, $sce) {
         var request = {type:"disconnectRoom"};
         port.postMessage(request);
         cbDisconnectRoom();
+    };
+
+    $scope.clearList = function () {
+        localRemove("copiedList");
+        $scope.copiedList = [];
     };
 
 }).directive("androidButton", function(){
@@ -301,29 +289,42 @@ port.onMessage.addListener(function(request) {
 
 function cbConnectRoom (data) {
     local("roomName", getScope().roomName);
-    getScope().roomStatus = 2;
+    getScope().roomStatus = Status.DISCONNECT;
     getScope().$apply();
     
 }
 
 function cbDisconnectRoom() {
     localRemove("roomName");
-    getScope().roomStatus = 0;
+    getScope().roomStatus = Status.CONNECT;
     //getScope().$apply();
 }
 
 function cbRoomUpdated (data) {
+    console.log("çağrıldım");
+    console.log(data);
     getScope().userList = data.users;
     getScope().$apply();
 }
 
 function cbScreen (data) {
-    if (data.roomStatus) getScope().roomStatus = data.roomStatus;
+    console.log("Burdayiz");
+    console.log(data);
+    if (data.roomStatus) {
+        getScope().roomStatus = data.roomStatus; 
+        if(data.roomStatus != 2) getScope().selectTab(1);
+    }
+    else {
+        getScope().selectTab(1);
+    }
+
     if (data.room) getScope().userList = data.room.users;
     getScope().$apply();
 }
 
 function cbDataCopied (data) {
+    console.log("cbDataCopied kismi");
+    console.log(data);
     if (!("data" in data)) return;
     var copied = data.data.copiedText;
     var ret = URLTester(copied);

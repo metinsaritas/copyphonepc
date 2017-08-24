@@ -8,7 +8,9 @@ var sendResponse = function(data) {
 	if (!port) return;
 	if (!data) return;
 
-	port.postMessage(data);
+	try {/*When chrome message to tab, tab can be closed */
+		port.postMessage(data);
+	} catch (e) {}
 };
 
 function copy(str) {
@@ -65,9 +67,9 @@ app.controller("myCtrl", function($scope, $interval){
 			var copiedText = n;
 			if (copiedText.length > 0) {
 				var dataCopied = {"from":"chrome","copiedText":copiedText};
-				socket.emit("dataCopied", dataCopied);
 				var response = {callback: "cbDataCopied", data: dataCopied};
 				sendResponse(response);
+				socket.emit("dataCopied", dataCopied);
 			}
 		}
 	});
@@ -86,6 +88,11 @@ function initalizeSocket () {
 		var copiedText = data.copiedText;
 		otherCopying = true;
 		receiveText = copiedText;
+
+		var dataCopied = {"from":"chrome","copiedText":copiedText};
+		var response = {callback: "cbDataCopied", data: dataCopied};
+		sendResponse(response);
+
 		copy(copiedText);
 		changeVar("copiedText", copiedText);
 	});
@@ -135,4 +142,3 @@ function disconnectRoom () {
 	socket.emit("disconnectRoom");
 	screen.roomStatus = 0;
 }
- 

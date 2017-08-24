@@ -49,8 +49,8 @@
 
                         <div class="text">Members</div>
                         <div class="userList group">
-                            <ul style="max-height: 280px; overflow-y: scroll;">
-                                <li ng-repeat="user in userList" ng-class="user.admin ? 'admin':''" ng-style="{'background-image':'url(imgs/ua_'+user.from+'.png)'}">{{user.Name}}</li>
+                            <ul style="max-height: 280px; overflow-y: auto;">
+                                <li ng-repeat="user in userList" ng-class="user.admin ? 'admin':''" ng-style="{'background-image':'url(imgs/ua_'+user.from+'.png)'}"><a>{{user.Name}}</a></li>
                             </ul>
                         </div>
                     </div>
@@ -74,7 +74,15 @@
     <div class="panel" app-panel="settings" >
         <div class="close" ng-click="closePanelSettings()"></div>
         <div class="content">
-        
+            <div class="itemHolder">
+                <div class="item"><span class="title">Get remote copied</span><android-button>Açık</android-button></div>
+                <div class="item"><span class="title">Set remote copied</span><android-button>Açık</android-button></div>
+                <div class="item"><span class="title">Nick</span><android-button>Açık</android-button></div>
+                <div class="item"><span class="title">List size</span><android-button>Açık</android-button></div>
+                <div class="item"><android-button style="display: block; float:unset;" ng-click="clearList();">Clear list</android-button></div>
+
+                <div class="item" style="position: absolute; bottom:0px;"><a href="mailto:metinsaritas2@gmail.com">metinsaritas2@gmail.com</a></div>
+            </div>
         </div>
     </div>
 </div>
