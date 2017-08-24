@@ -138,6 +138,7 @@ clear, .clear {clear:both;}
 }
 
 android-button {
+    position: relative;
     background-color: #d7d7d9;
     color: #505050;
     border-radius: 3px;
@@ -162,6 +163,7 @@ android-button:hover {
 }
 
 android-textview {
+    position: relative;
     display:inline-block;
     text-align: center;
     background:none;
@@ -277,7 +279,7 @@ android-toast {
     height: 36px;
     line-height: 36px;
     float: left;
-    min-width: 170px;
+    min-width: 80px;
     overflow: hidden;
     white-space: nowrap;
 }
@@ -285,4 +287,39 @@ android-toast {
 .panel .content .itemHolder .item android-button {
     float:right;
     position: relative;
+}
+
+android-togglebutton {
+    position: relative;
+    background-color: #d7d7d9;
+    color: #505050;
+    border-radius: 3px;
+    border-bottom: 2px solid #c1bcc5;
+    padding: 6px 8px;
+    font-size: 14px;
+    font-weight: bold;
+    display: inline-block;
+    box-shadow: inset 0px 0px 2px 2px #d1d1d2;
+    cursor: pointer;
+
+    transition: translate;
+    transition-duration: 0.2s;
+    transition-property: background;
+
+    text-align: center;
+    overflow: hidden;
+}
+
+android-togglebutton .toggleButtonStatus {
+    background-color:dimgray;
+    position:absolute;
+    bottom:2px;left: 50%;
+    margin-left:-20%;               
+    height:2px;
+    width:40%;
+    border-radius:10px;
+}
+
+android-togglebutton .toggleButtonStatus.checked {
+    background-color: #3498DB;
 }

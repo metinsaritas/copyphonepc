@@ -81,6 +81,7 @@ function readFromCache () {
     
     var roomName    = local("roomName");    if (roomName)   getScope().roomName    = roomName;
     var copiedList  = local("copiedList");  if (copiedList) getScope().copiedList  = JSON.parse(copiedList);
+    var nick        = local("nick");        if (nick) getScope().nick  = nick;
     
     //getScope().$apply();
 }
@@ -106,7 +107,7 @@ var app = angular.module("main", []);
 app.controller("controller", function($scope, $compile, $sce) {
     
 
-    $scope.Settings = {appName:"Copy Team", colorPrimary: "#2d3e50", colorSecond: "#ffa500", copiedLimit:65};
+    $scope.Settings = {appName:"Copy Team", colorPrimary: "#2d3e50", colorSecond: "#ffa500"};
     $scope.statusPanelSettings = false;
     $scope.selectedTab = Number(local("selectedTab") || 1);
     $scope.copiedList = [];
@@ -119,6 +120,9 @@ app.controller("controller", function($scope, $compile, $sce) {
     $scope.selectTab = function (val) {
         $scope.selectedTab = val;
     };
+
+    $scope.nick = "User";
+    $scope.copiedLimit = 20;
 
     readFromCache();
 
@@ -212,7 +216,7 @@ app.controller("controller", function($scope, $compile, $sce) {
 
     $scope.connectRoom = function () {
         $scope.roomName = angular.element("#tvRoomName").text();
-        var request = {type:"connectRoom",data:{"from":"chrome","roomName":$scope.roomName,"hasRoom":false,"name":"User Chrome"}};
+        var request = {type:"connectRoom",data:{"from":"chrome","roomName":$scope.roomName,"hasRoom":false,"name":$scope.nick}};
         $scope.roomStatus = Status.CONNECTING;
         port.postMessage(request);
     };
@@ -228,9 +232,34 @@ app.controller("controller", function($scope, $compile, $sce) {
         $scope.copiedList = [];
     };
 
+    $scope.applyChangeName = function (n) {
+        var nick = n || $("#tvNick").text() || "";
+        local("nick", nick);
+        $scope.nick = nick;
+        Toast.makeText("Applying", Toast.LENGTH_SHORT, $compile, $scope);
+    };
+
+    $scope.applyChangeCopiedLimit = function (n) {
+        var copiedLimit = Number(n || $("#tvCopiedLimit").text() || 20);
+        copiedLimit = copiedLimit > 0 ? copiedLimit : 20;
+        local("copiedLimit", copiedLimit);
+        $scope.copiedLimit = copiedLimit;
+        
+        Toast.makeText("Applying", Toast.LENGTH_SHORT, $compile, $scope);
+    };
+
+    $scope.$watch("nick", function (n,o) {
+        if (n == o) return;
+
+        var request = {type:"changeName", data:{"name":n}};
+        port.postMessage(request);
+    });
+
 }).directive("androidButton", function(){
     return {
-
+        link: function (scope, element, attr) {
+            element.addClass("noselect");
+        }
     }
 }).directive("androidTextview", function(){
     return {
@@ -279,6 +308,33 @@ app.controller("controller", function($scope, $compile, $sce) {
             },100);
         }
     }
+}).directive("androidTogglebutton", function () {
+    return {
+        restrict: "E",
+        template: function (element, attr) {
+            var html = '<div>{{text}}</div><div class="toggleButtonStatus" ng-class="checked && '+"'checked'"+'"></div>';
+            return html;
+        },
+        scope: {
+            checked: "="
+        },
+        link: function (scope, element, attr) {
+
+            scope.checked = "checked" in attr ? attr.checked : false;
+            scope.texton = "texton" in attr ? attr.texton : "Active";
+            scope.textoff = "textoff" in attr ? attr.textoff : "Passive";
+            scope.text = scope.checked ? scope.texton : scope.textoff;
+            
+            element.on("click", function(event) {
+                scope.checked = !scope.checked;
+                scope.$apply();
+            });
+
+            scope.$watch("checked", function(n,o) {
+                  scope.text = scope.checked ? scope.texton : scope.textoff;
+            });
+        }
+    }
 });
 
 port.onMessage.addListener(function(request) {
@@ -308,8 +364,6 @@ function cbRoomUpdated (data) {
 }
 
 function cbScreen (data) {
-    console.log("Burdayiz");
-    console.log(data);
     if (data.roomStatus) {
         getScope().roomStatus = data.roomStatus; 
         if(data.roomStatus != 2) getScope().selectTab(1);
@@ -336,7 +390,7 @@ function cbDataCopied (data) {
 
     var copiedList = [];
     var list = getScope().copiedList;
-    var limit = getScope().Settings.copiedLimit;
+    var limit = getScope().copiedLimit;
     list = list.slice(0, limit);
     list.forEach(function(val, index){
         var withoutHashKey = val;

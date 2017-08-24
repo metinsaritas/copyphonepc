@@ -142,3 +142,7 @@ function disconnectRoom () {
 	socket.emit("disconnectRoom");
 	screen.roomStatus = 0;
 }
+
+function changeName (data) {
+	socket.emit("changeName", data);
+}
